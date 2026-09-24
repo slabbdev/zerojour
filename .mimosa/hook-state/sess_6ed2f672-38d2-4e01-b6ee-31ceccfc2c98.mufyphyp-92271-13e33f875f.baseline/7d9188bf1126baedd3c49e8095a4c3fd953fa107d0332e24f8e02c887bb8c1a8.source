@@ -10,12 +10,6 @@ import type {OpenAITool} from './llm.ts'
 export type SanityContext = {client: Client; tools: OpenAITool[]}
 
 export function contextUrl(cfg: Config): URL {
-  // SANITY_CONTEXT_URL overrides the whole endpoint (local mocks, proxies);
-  // otherwise the hosted endpoint is built from org id + endpoint name.
-  if (cfg.sanityContextUrl) return new URL(cfg.sanityContextUrl)
-  if (!cfg.sanityOrgId || !cfg.sanityContextEndpoint) {
-    throw new Error('Set SANITY_ORG_ID + SANITY_CONTEXT_ENDPOINT (or SANITY_CONTEXT_URL)')
-  }
   return new URL(
     `https://api.sanity.io/v1/context/organizations/${cfg.sanityOrgId}/mcp/${cfg.sanityContextEndpoint}`,
   )

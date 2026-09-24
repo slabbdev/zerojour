@@ -8,9 +8,8 @@
     "fetch:advisories": "tsx seed/fetch-ghsa.ts",
     "seed": "tsx seed/import-sanity.ts",
     "agent": "tsx agent/src/main.ts",
-    "ui": "tsx agent/src/main.ts serve-ui",
     "eval": "tsx eval/run.ts",
-    "test": "tsx --test --test-force-exit --test-timeout=15000 tests/*.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

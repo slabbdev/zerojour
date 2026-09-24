@@ -1,0 +1,905 @@
+{
+  "schema_version": "mimosa-task-review/v2",
+  "run_id": "20260924T200206539Z-91348-d40cb664091b",
+  "run_status": "inconclusive",
+  "errors": [
+    {
+      "stage": "candidate-select",
+      "target": "tests/cvss.test.ts",
+      "reason": "candidate_limit_exceeded: 3 changed reviewable file(s) were not scanned because the limit is 20"
+    },
+    {
+      "stage": "baseline",
+      "target": ".",
+      "reason": "baseline_partial: baseline capture had enumeration or snapshot errors"
+    }
+  ],
+  "coverage": {
+    "schema_version": "mimosa-hook-coverage/v1",
+    "status": "partial",
+    "scope": "hook_observed_diff",
+    "baseline": {
+      "complete": false,
+      "captured_files": 23,
+      "candidate_limit": 5000,
+      "truncated": false,
+      "enumeration_error_count": 0,
+      "snapshot_error_count": 0,
+      "compensated_target_count": 23
+    },
+    "change_tracking": {
+      "touched_observed": 23,
+      "touched_retained": 23,
+      "truncated": false,
+      "bash_mutation": true,
+      "bash_discovered": 23,
+      "bash_discovery_limit": 80,
+      "bash_discovery_truncated": false
+    },
+    "candidates": {
+      "eligible_files": 23,
+      "selected_files": 20,
+      "limit": 20,
+      "truncated": true
+    },
+    "scanning": {
+      "required_files": 18,
+      "scanned_files": 18,
+      "skipped_files": 0,
+      "failed_files": 0,
+      "project_checks_required": 1,
+      "project_checks_completed": 1
+    },
+    "notification": {
+      "eligible_findings": 11,
+      "detailed_findings": 0,
+      "detail_limit": 3,
+      "truncated": true
+    },
+    "reason_counts": {
+      "candidate_limit_exceeded": 1,
+      "baseline_partial": 1,
+      "project_check_failed": 2
+    },
+    "reasons": [
+      {
+        "code": "candidate_limit_exceeded",
+        "stage": "candidate-select",
+        "target": "tests/cvss.test.ts",
+        "detail": "3 changed reviewable file(s) were not scanned because the limit is 20",
+        "affects_completion": true
+      },
+      {
+        "code": "baseline_partial",
+        "stage": "baseline",
+        "target": ".",
+        "detail": "baseline capture had enumeration or snapshot errors",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "candidate-select",
+        "target": "tests/cvss.test.ts",
+        "detail": "candidate_limit_exceeded: 3 changed reviewable file(s) were not scanned because the limit is 20",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "baseline",
+        "target": ".",
+        "detail": "baseline_partial: baseline capture had enumeration or snapshot errors",
+        "affects_completion": true
+      }
+    ],
+    "reasons_truncated": false
+  },
+  "generated_at": "2026-09-24T20:02:06.539Z",
+  "session_id": "sess_6ed2f672-38d2-4e01-b6ee-31ceccfc2c98",
+  "target": ".",
+  "revision": "0e5f0f7b485c912d2aeec82eddb09ca67bf2fa5c",
+  "rules_version": "unavailable",
+  "diff_hash": "8733777a5b17e87616d834ed8eb07305b4e83f2931344c6ebd8550d9938cb224",
+  "diff": {
+    "algorithm": "sha256",
+    "changed_file_count": 20,
+    "changed_files": [
+      {
+        "file": "agent/src/baseline.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 73
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "861e6c80989f4fdd1b2dce64403fab09a5970d0e2cebb7a7e392101b2ebe02b2"
+      },
+      {
+        "file": "agent/src/config.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 67
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "ee74a69b4e32e58a5642ba19ec311044a466d12257b8f90e35ab74a614418660"
+      },
+      {
+        "file": "agent/src/cvss.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 47
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "5168a4d1a901390e5d5b7221e2d863b2f8a09f0953277f43700838cdfc80b638"
+      },
+      {
+        "file": "agent/src/llm.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 47
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "97a903c20881a96400a223ccd221b6fccdcab0f2cbc1dc4deccd5ee4c667a868"
+      },
+      {
+        "file": "agent/src/main.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 131
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "5ed3a3780e5ea0d8b833d83bb281760a46c7ec5303baff3273f5f572cdd9f626"
+      },
+      {
+        "file": "agent/src/mcp.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 38
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "d49c24fd940b99e2e3dce9d8954160f9ec6e33b47e905ebacd1ec3569311f63c"
+      },
+      {
+        "file": "agent/src/noirebox.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 56
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "a21d4a4af7d938b04729d8e1b1cebf179365c6ea6ec8f0244802abd7cd631e15"
+      },
+      {
+        "file": "agent/src/tools.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 43
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "9ed374202a84a342778c29a5284ac97e0d57843e03f30b85fe20165f7bc42b57"
+      },
+      {
+        "file": "eval/questions.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 177
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "b389a8032158a089dcc8bf84424dfcd9d5a8d5b99572314ce072fec9a632cd39"
+      },
+      {
+        "file": "eval/run.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 99
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "59d0762a2a2ff2d2c73455b9f7dcfb88a054693520c945e46433f6f150f53833"
+      },
+      {
+        "file": "package.json",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 26
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "539b196164cc168e6a7f575063353cc2e4636124246e9884e10da5ff33f1fc4c"
+      },
+      {
+        "file": "seed/fetch-ghsa.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 235
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "9565681629a666a97d9351ad78ad4bb56b641da382cae9e776d2fc6d50178592"
+      },
+      {
+        "file": "seed/import-sanity.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 81
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "bee63d98cd76e4797fe403f305513e8cda70e9b64f72d3c5b9f6c582121878b8"
+      },
+      {
+        "file": "studio/package.json",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 17
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "10a0d0035a10367c3d362945cc970f0fcfa9c922711fa012937ce2a4a0ca452c"
+      },
+      {
+        "file": "studio/sanity.config.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 12
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "4ecfda0c3227f9f630a6ce53cfb93bc34c3ed6d1397c5b27686d6903a53a6084"
+      },
+      {
+        "file": "studio/schemas/advisory.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 96
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "990b6000c1d5749576d7eaefbd8a992fc1216bd2838fb5f19ee0d5ae2689c4d1"
+      },
+      {
+        "file": "studio/schemas/cwe.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 21
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "bca0f67218eef19e7866c927fe850d90fc014806e11f2090d36151718f2dca6b"
+      },
+      {
+        "file": "studio/schemas/index.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 7
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "0a9c5c91d3cb0c02e62072113c15ed7ae204c0cdd65b843a95da419b914d35a3"
+      },
+      {
+        "file": "studio/schemas/playbook.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 29
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "4ae1dfb4a953f2611adc365c2c30cabe8e596a3c0bd9c303898267ecb6652c9b"
+      },
+      {
+        "file": "studio/schemas/product.ts",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 23
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "f510687b931d096b447466a9a0db742461aad7ea834ab5ccfe5db8b87a14ba72"
+      }
+    ]
+  },
+  "timing": {
+    "started_at": "2026-09-24T20:02:05.076Z",
+    "completed_at": "2026-09-24T20:02:06.539Z",
+    "duration_ms": 1463,
+    "measurement": "hook_wall_clock"
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "total": 0,
+    "model_calls": 0,
+    "measurement": "known-zero"
+  },
+  "telemetry": {
+    "schemaVersion": "mimosa-gate-telemetry/v1",
+    "profile": "gate",
+    "operation": "Stop",
+    "outcome": "partial/INCONCLUSIVE",
+    "latencyMs": 1463,
+    "peakMemoryBytes": 219709440,
+    "memoryMeasurement": "max-observed-process-rss",
+    "scannedFiles": 18,
+    "cache": {
+      "hits": 0,
+      "misses": 0,
+      "measurement": "not-applicable"
+    },
+    "denyCount": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "total": 0,
+      "modelCalls": 0,
+      "measurement": "known-zero"
+    }
+  },
+  "finding_count": 11,
+  "rewake_finding_count": 0,
+  "evidence_boundary": {
+    "scan": "candidate",
+    "static_fix_verification": "observed_static_only",
+    "runtime_verification": "not_performed"
+  },
+  "finding_events": [
+    {
+      "finding_id": "mimosa-cfa37d10fe8a14422228b0c2",
+      "file": "seed/import-sanity.ts",
+      "line": 16,
+      "rule_id": "security",
+      "severity": "high",
+      "category": "弱随机数",
+      "status": "candidate",
+      "decision": "advisory",
+      "at": "2026-09-24T19:56:24.658Z",
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "4c68cef29ebece0b487d4ece13532456c5531e2b0806776acf8b73a31199a4d8",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-99d7f85e6b1e4ccb3717abd3",
+      "file": "package.json",
+      "line": 16,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "cb80f21032c76b9259686f2ee26193d8c6d7cc5093209a70a102682d8c0aff11",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-6134280050c7ad0b242f1c73",
+      "file": "package.json",
+      "line": 17,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "68ccf71642eeb12a4e7053904119058465ae70fa6f0e6aad0abc5280980799d9",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-7987190fd0610b89dbe5fb1c",
+      "file": "package.json",
+      "line": 18,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "8f3eae28381245cfcc0d8d9ef06bbcab011a615338c0639e29fcd7ed0ab25e04",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-e9c077c4f376dd9cd42a0756",
+      "file": "package.json",
+      "line": 21,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "1db9e94ff2ba979fd3ab1f48893255762c42e577a55f14a8ae4ef6eaeb930d64",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-45abfc8c44cf5c0f35979bb7",
+      "file": "package.json",
+      "line": 22,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "aa398fd174c6a968ba7bcdea65c182230ecb3fab41c84cf728574088937409d4",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-2ab87f583febda8e51a6b480",
+      "file": "package.json",
+      "line": 23,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "ca98b9a879c510100152631d1a0e07039d6fa836338cb18dc052223015819123",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-becd02459ec23324e3d9bec3",
+      "file": "package.json",
+      "line": 24,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "24a8e9c892ce74e2b2405648f9da3c0b9b5924c1b9099f6ccb56dcc0dc241bba",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-fc1bcf34ebfe443125b82252",
+      "file": "studio/package.json",
+      "line": 12,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "a6ed840c4fb9393477e737cc4d3c31d5ae5c356025958d9654993c65f8000cd1",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-9fbb849f0f171cab285d3981",
+      "file": "studio/package.json",
+      "line": 13,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "d7f74e038d7807a006e50852693a9884cd225d9f3d6bb8af3f7f81c9e56fc48f",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-6ed9f92f45555d1605c0a190",
+      "file": "studio/package.json",
+      "line": 14,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "72a0096485fd1438441371af028313cc8a8a2481e92283ae91519458cd569edd",
+        "runtime_oracle": false
+      }
+    },
+    {
+      "finding_id": "mimosa-d39bdf7d17f06271c363a768",
+      "file": "studio/package.json",
+      "line": 15,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "status": "candidate",
+      "decision": "observe",
+      "at": "2026-09-24T20:02:06.539Z",
+      "evidence": {
+        "kind": "static_scan",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "source": "semgrep",
+        "evidence_hash": "aeefe2c479b5f16142d8364239ed5ad5229a3f79f34d0b0643c9182c1f627bfb",
+        "runtime_oracle": false
+      }
+    }
+  ],
+  "findings": [
+    {
+      "finding_id": "mimosa-99d7f85e6b1e4ccb3717abd3",
+      "file": "package.json",
+      "line": 16,
+      "end_line": 16,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 16,
+          "evidence_hash": "cb80f21032c76b9259686f2ee26193d8c6d7cc5093209a70a102682d8c0aff11",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-6134280050c7ad0b242f1c73",
+      "file": "package.json",
+      "line": 17,
+      "end_line": 17,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 17,
+          "evidence_hash": "68ccf71642eeb12a4e7053904119058465ae70fa6f0e6aad0abc5280980799d9",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-7987190fd0610b89dbe5fb1c",
+      "file": "package.json",
+      "line": 18,
+      "end_line": 18,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 18,
+          "evidence_hash": "8f3eae28381245cfcc0d8d9ef06bbcab011a615338c0639e29fcd7ed0ab25e04",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-e9c077c4f376dd9cd42a0756",
+      "file": "package.json",
+      "line": 21,
+      "end_line": 21,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 21,
+          "evidence_hash": "1db9e94ff2ba979fd3ab1f48893255762c42e577a55f14a8ae4ef6eaeb930d64",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-45abfc8c44cf5c0f35979bb7",
+      "file": "package.json",
+      "line": 22,
+      "end_line": 22,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 22,
+          "evidence_hash": "aa398fd174c6a968ba7bcdea65c182230ecb3fab41c84cf728574088937409d4",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-2ab87f583febda8e51a6b480",
+      "file": "package.json",
+      "line": 23,
+      "end_line": 23,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 23,
+          "evidence_hash": "ca98b9a879c510100152631d1a0e07039d6fa836338cb18dc052223015819123",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-becd02459ec23324e3d9bec3",
+      "file": "package.json",
+      "line": 24,
+      "end_line": 24,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "package.json",
+          "line": 24,
+          "evidence_hash": "24a8e9c892ce74e2b2405648f9da3c0b9b5924c1b9099f6ccb56dcc0dc241bba",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-fc1bcf34ebfe443125b82252",
+      "file": "studio/package.json",
+      "line": 12,
+      "end_line": 12,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "studio/package.json",
+          "line": 12,
+          "evidence_hash": "a6ed840c4fb9393477e737cc4d3c31d5ae5c356025958d9654993c65f8000cd1",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-9fbb849f0f171cab285d3981",
+      "file": "studio/package.json",
+      "line": 13,
+      "end_line": 13,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "studio/package.json",
+          "line": 13,
+          "evidence_hash": "d7f74e038d7807a006e50852693a9884cd225d9f3d6bb8af3f7f81c9e56fc48f",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-6ed9f92f45555d1605c0a190",
+      "file": "studio/package.json",
+      "line": 14,
+      "end_line": 14,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "studio/package.json",
+          "line": 14,
+          "evidence_hash": "72a0096485fd1438441371af028313cc8a8a2481e92283ae91519458cd569edd",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    },
+    {
+      "finding_id": "mimosa-d39bdf7d17f06271c363a768",
+      "file": "studio/package.json",
+      "line": 15,
+      "end_line": 15,
+      "rule_id": "mimosa.supply.version-range",
+      "severity": "low",
+      "category": "manifest",
+      "kind": "semgrep",
+      "advisory": false,
+      "status": "candidate",
+      "evidence_boundary": "candidate",
+      "evidence": [
+        {
+          "kind": "static_scan",
+          "boundary": "candidate",
+          "producer": "deterministic",
+          "source": "semgrep",
+          "file": "studio/package.json",
+          "line": 15,
+          "evidence_hash": "aeefe2c479b5f16142d8364239ed5ad5229a3f79f34d0b0643c9182c1f627bfb",
+          "runtime_oracle": false
+        }
+      ],
+      "already_reported_to_agent": false,
+      "selected_for_rewake": false
+    }
+  ],
+  "artifacts": {
+    "immutable_report": ".mimosa/reports/task-review-sess_6ed2f672-38d2-4e01-b6ee-31ceccfc2c98-20260924T200206539Z-91348-d40cb664091b.json",
+    "latest_report": ".mimosa/reports/task-review-sess_6ed2f672-38d2-4e01-b6ee-31ceccfc2c98.json",
+    "history_summary": ".mimosa/history/run-20260924T200206539Z-91348-d40cb664091b.json"
+  }
+}

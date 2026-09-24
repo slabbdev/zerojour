@@ -47,21 +47,14 @@ async function main() {
   const cwes = readJsonl('cwes.jsonl').map((d) => ({...d, _type: 'cwe'}))
   const advisories = readJsonl('advisories.jsonl').map((d) => ({...d, _type: 'advisory'}))
   const playbooks = readJsonl('playbooks.jsonl').map((d) => {
-    const s = (d as {sections: {intro: string; upgradeBullets: string[]; unpatchedLine: string; unpatchedGuidance: string; contextPara: string}}).sections
-    const blocks: Record<string, unknown>[] = [block(s.intro)]
-    if (s.upgradeBullets.length) {
-      blocks.push(block('Upgrade targets, newest first:'))
-      blocks.push(...s.upgradeBullets.map((b) => block(b, {listItem: 'bullet'})))
-    }
-    if (s.unpatchedLine) blocks.push(block(s.unpatchedLine), block(s.unpatchedGuidance))
-    blocks.push(block(s.contextPara))
+    const p = d as {blocks: {intro: string; bullets: string[]}; lastReviewed?: string}
     return {
       _id: d._id,
       _type: 'playbook',
       title: d.title,
       product: d.product,
-      lastReviewed: new Date().toISOString().slice(0, 10),
-      content: blocks,
+      lastReviewed: (p.blocks ? new Date().toISOString().slice(0, 10) : undefined) as string | undefined,
+      content: [block(p.blocks.intro), ...p.blocks.bullets.map((b) => block(b, {listItem: 'bullet'}))],
     }
   })
 
