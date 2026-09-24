@@ -1,0 +1,38 @@
+// Sanity Context MCP client. The endpoint is hosted by Sanity:
+//   https://api.sanity.io/v1/context/organizations/:orgId/mcp/:endpointName
+// Auth is an organization API token with Context Viewer permission.
+
+import {Client} from '@modelcontextprotocol/sdk/client/index.js'
+import {StreamableHTTPClientTransport} from '@modelcontextprotocol/sdk/client/streamableHttp.js'
+import type {Config} from './config.ts'
+import type {OpenAITool} from './llm.ts'
+
+export type SanityContext = {client: Client; tools: OpenAITool[]}
+
+export function contextUrl(cfg: Config): URL {
+  return new URL(
+    `https://api.sanity.io/v1/context/organizations/${cfg.sanityOrgId}/mcp/${cfg.sanityContextEndpoint}`,
+  )
+}
+
+export async function connectSanityContext(cfg: Config): Promise<SanityContext> {
+  const transport = new StreamableHTTPClientTransport(contextUrl(cfg), {
+    requestInit: {headers: {Authorization: `Bearer ${cfg.sanityContextToken}`}},
+  })
+  const client = new Client({name: 'vulnradar', version: '0.1.0'})
+  await client.connect(transport)
+  const {tools} = await client.listTools()
+  const openAiTools: OpenAITool[] = tools.map((t) => ({
+    type: 'function',
+    function: {name: t.name, description: t.description ?? '', parameters: (t.inputSchema ?? {}) as Record<string, unknown>},
+  }))
+  return {client, tools: openAiTools}
+}
+
+export async function callMcpTool(client: Client, name: string, args: Record<string, unknown>): Promise<string> {
+  const res = await client.callTool({name, arguments: args})
+  const content = (res.content ?? []) as {type: string; text?: string}[]
+  return content
+    .map((c) => (c.type === 'text' ? c.text : JSON.stringify(c)))
+    .join('\n')
+}

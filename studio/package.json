@@ -1,0 +1,17 @@
+{
+  "name": "vulnradar-studio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "deploy-schema": "sanity schema deploy",
+    "deploy": "sanity deploy"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sanity": "^6.16.0",
+    "styled-components": "^6.1.19"
+  }
+}

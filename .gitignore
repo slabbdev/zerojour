@@ -1,0 +1,5 @@
+node_modules/
+.env
+seed/data/
+*.log
+dist/
