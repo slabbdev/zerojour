@@ -10,7 +10,7 @@ import {connectSanityContext} from './mcp.ts'
 import {NoireBoxJournal} from './noirebox.ts'
 import {versionInRange, versionInRangeTool} from './tools.ts'
 
-const MAX_STEPS = 10
+const MAX_STEPS = 14
 
 const SYSTEM_PROMPT = `You are ZéroJour, an agent answering questions about security advisories in a curated dataset of npm/pip packages, served through Sanity Context.
 
@@ -25,10 +25,13 @@ Method:
    - References: product->{name, ecosystem}, cwe[]->{cweId, name}.
 4. GROQ compares version strings lexicographically and cannot do semver. To test whether a version is affected, fetch the candidate advisory ranges, then call the local version_in_range tool for each range.
 5. Questions about remediation guidance ("what do the notes recommend", "how to decide") are served by the Knowledge Base: use kb_knowledge_base_read with the kb id and paths from its outline (kb_initial_context lists them).
+6. "Most recent" or "newest" ALWAYS means order(published desc) [0...n] — never fetch without that ordering and never assume from memory.
+7. Aggregations ("which package has the most..."): fetch the flat list with a projection (e.g. {"product": product->.name, "score": severity.baseScore} filtered to the threshold), then count the groups yourself from the returned rows. Cross-check any count you state against meta.resultCount.
 
 Rules:
 - Answer ONLY from tool results. Cite CVE/GHSA IDs and fixed versions exactly as returned.
-- If the data does not answer the question, say so plainly instead of guessing.`
+- If the data does not answer the question, say so plainly instead of guessing.
+- Budget: at most 8 tool calls, then answer with what you have. Skip schema_explorer when the shapes above already cover the fields you need.`
 
 type Step = {tool: string; args: Record<string, unknown>; resultPreview: string}
 
@@ -73,8 +76,17 @@ export async function ask(question: string): Promise<AskResult> {
       messages.push(toolResultMessage(call.id, text))
     }
   }
+  // Step budget exhausted: the data is already fetched — force one final
+  // no-tools answer from what was retrieved, marked as budget-forced.
+  messages.push({
+    role: 'user',
+    content: 'You have reached the tool budget. Answer the original question NOW, using only what the tools already returned. If the data is insufficient, say exactly what is missing.',
+  })
+  const forced = await chat(cfg, messages, [])
+  const answer = forced.content ?? ''
+  if (await journal.seal('agent_answer', {question, answer, steps, forced: true})) sealed++
   await ctx.close()
-  throw new Error(`agent exceeded ${MAX_STEPS} steps without a final answer`)
+  return {answer, steps, sealed}
 }
 
 export async function naive(question: string): Promise<{answer: string; context: string; sealed: number}> {

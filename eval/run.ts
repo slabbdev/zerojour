@@ -53,11 +53,22 @@ async function main() {
       ? `${gt.advisoryIds.filter((id) => hitIds.has(id.replace('advisory-', ''))).length}/${gt.advisoryIds.length}`
       : 'n/a'
 
-    const [naiveResult, structuredResult, directResult] = [await naive(q.question), await ask(q.question), await direct(q.question)]
+    // One arm failing must never kill the suite: a crashed arm is a FAIL.
+    async function safeRun<T>(fn: () => Promise<T>, label: string): Promise<T | null> {
+      try {
+        return await fn()
+      } catch (err) {
+        console.log(`  [${label} arm crashed: ${err instanceof Error ? err.message : err} — recorded as a miss]`)
+        return null
+      }
+    }
+    const naiveResult = await safeRun(() => naive(q.question), 'naive')
+    const structuredResult = await safeRun(() => ask(q.question), 'structured')
+    const directResult = await safeRun(() => direct(q.question), 'no-tools')
 
-    const naiveToken = containsToken(naiveResult.answer, gt.expectedTokens)
-    const noToolsToken = containsToken(directResult.answer, gt.expectedTokens)
-    const structuredToken = containsToken(structuredResult.answer, gt.expectedTokens)
+    const naiveToken = naiveResult ? containsToken(naiveResult.answer, gt.expectedTokens) : null
+    const noToolsToken = directResult ? containsToken(directResult.answer, gt.expectedTokens) : null
+    const structuredToken = structuredResult ? containsToken(structuredResult.answer, gt.expectedTokens) : null
 
     rows.push({
       id: q.id,
@@ -67,17 +78,20 @@ async function main() {
       noToolsHit: noToolsToken !== null,
       structuredHit: structuredToken !== null,
       keywordCoverage: coverage,
-      steps: structuredResult.steps.length,
+      steps: structuredResult?.steps.length ?? 0,
     })
+
+    const printArm = (label: string, r: {answer: string} | null) =>
+      console.log(`  --- ${label} answer:\n${r ? r.answer.slice(0, 600) : '(crashed — recorded as a miss)'}`)
 
     console.log(`\n=== ${q.id} (${q.kind}) — ${gt.note}`)
     console.log(`  ground truth: ${gt.advisoryIds.length} decisive doc(s), tokens: ${gt.expectedTokens.slice(0, 4).join(', ')}`)
     console.log(`  no-tools (memorization control): hit=${noToolsToken !== null}${noToolsToken ? ` (${noToolsToken})` : ''}`)
     console.log(`  naive:      hit=${naiveToken !== null}${naiveToken ? ` (${naiveToken})` : ''}  keyword-hits coverage of decisive docs: ${coverage}`)
-    console.log(`  structured: hit=${structuredToken !== null}${structuredToken ? ` (${structuredToken})` : ''}  tool steps: ${structuredResult.steps.length}`)
-    console.log(`  --- no-tools answer:\n${directResult.answer.slice(0, 400)}`)
-    console.log(`  --- naive answer:\n${naiveResult.answer.slice(0, 600)}`)
-    console.log(`  --- structured answer:\n${structuredResult.answer.slice(0, 600)}`)
+    console.log(`  structured: hit=${structuredToken !== null}${structuredToken ? ` (${structuredToken})` : ''}  tool steps: ${structuredResult?.steps.length ?? 'n/a'}`)
+    printArm('no-tools', directResult)
+    printArm('naive', naiveResult)
+    printArm('structured', structuredResult)
 
     await journal.seal('eval_result', {
       questionId: q.id,

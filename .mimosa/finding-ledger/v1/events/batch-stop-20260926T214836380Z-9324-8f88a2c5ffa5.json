@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "stop-20260926T214836380Z-9324-8f88a2c5ffa5",
+  "runId": "20260926T214836380Z-9324-8f88a2c5ffa5",
+  "runStatus": "inconclusive",
+  "coverage": {
+    "status": "partial",
+    "reasons": [
+      {
+        "code": "baseline_snapshot_unreadable",
+        "stage": "baseline-read",
+        "target": "studio/sanity.cli.ts",
+        "detail": "file is missing from task baseline",
+        "affectsCompletion": true
+      },
+      {
+        "code": "baseline_snapshot_unreadable",
+        "stage": "baseline-read",
+        "target": "studio/.sanity/runtime/app.js",
+        "detail": "file is missing from task baseline",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "baseline-read",
+        "target": "studio/sanity.cli.ts",
+        "detail": "baseline_snapshot_unreadable: file is missing from task baseline",
+        "affectsCompletion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "baseline-read",
+        "target": "studio/.sanity/runtime/app.js",
+        "detail": "baseline_snapshot_unreadable: file is missing from task baseline",
+        "affectsCompletion": true
+      }
+    ]
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "Stop"
+  },
+  "revision": "180b89e910eed93ae01dac41e83977e89edf5cb8",
+  "diffHash": "ce76946901d8bcad22a49da61787bd9dcae5ad9a01ff44aa363f7482bd772f8f",
+  "rulesVersion": "unavailable",
+  "sessionHash": "ea25c3e32861f01c7ed0a5d5dbebaff8eb6a52dc16f616dfff5d5417f54d35b7",
+  "reportRef": ".mimosa/reports/task-review-sess_6ed2f672-38d2-4e01-b6ee-31ceccfc2c98-20260926T214836380Z-9324-8f88a2c5ffa5.json",
+  "events": [],
+  "observedFindingIds": [],
+  "verifiedFiles": [
+    {
+      "file": "studio/sanity.cli.ts",
+      "direct": "complete",
+      "projectContext": "partial"
+    },
+    {
+      "file": "studio/.sanity/runtime/app.js",
+      "direct": "complete",
+      "projectContext": "partial"
+    }
+  ],
+  "recordedAt": "2026-09-26T21:48:36.700Z"
+}
