@@ -27,7 +27,7 @@ async function main() {
   const corpus = loadCorpus()
   const journal = new NoireBoxJournal(cfg)
   const sanity = await connectSanityContext(cfg)
-  await sanity.close() // connectivity check up front — fail fast before running the suite
+  await sanity.client.close() // connectivity check up front — fail fast before running the suite
 
   const rows: {
     id: string

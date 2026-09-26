@@ -1,0 +1,204 @@
+// The eval set. Ground truth is computed independently from the seed data
+// with plain predicates and semver — NOT through Sanity — so a PASS depends
+// on the data being answerable, not on the agent agreeing with itself.
+// Verdicts are automated token containment; a human still reviews the
+// transcript before publishing anything.
+
+import semver from 'semver'
+import type {Corpus, AdvisoryRow} from '../agent/src/baseline.ts'
+import {productName} from '../agent/src/baseline.ts'
+
+export type GroundTruth = {
+  expectedTokens: string[] // a correct answer must contain at least one (ids, versions, names)
+  advisoryIds: string[] // the decisive advisory docs
+  note: string
+}
+
+export type Question = {
+  id: string
+  question: string
+  kind: 'groq' | 'kb' | 'hybrid'
+  gt: (corpus: Corpus) => GroundTruth
+}
+
+function cweNames(corpus: Corpus, advisory: AdvisoryRow): string[] {
+  const cweRefs = (advisory.cwe as {_ref: string}[] | undefined) ?? []
+  return cweRefs.map((r) => corpus.cwes.find((c) => c._id === r._ref)?.name ?? '')
+}
+
+function versionAffected(advisory: AdvisoryRow, version: string): boolean {
+  const ranges = (advisory.affectedVersions as {introduced?: string; fixed?: string; lastAffected?: string}[]) ?? []
+  const v = semver.coerce(version)
+  if (!v) return false
+  return ranges.some((r) => {
+    const introduced = r.introduced ? semver.coerce(r.introduced) : null
+    const fixed = r.fixed ? semver.coerce(r.fixed) : null
+    const lastAffected = r.lastAffected ? semver.coerce(r.lastAffected) : null
+    if (introduced && semver.lt(v, introduced)) return false
+    if (fixed && !semver.lt(v, fixed)) return false
+    if (lastAffected && semver.gt(v, lastAffected)) return false
+    return true
+  })
+}
+
+export const QUESTIONS: Question[] = [
+  {
+    id: 'Q1-version-intersection',
+    question: 'I run axios 1.2.0 in production. Which known advisories in the dataset affect exactly that version, and what is the first version that fixes each one?',
+    kind: 'groq',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => productName(corpus, a.product._ref) === 'axios' && versionAffected(a, '1.2.0'))
+      return {
+        expectedTokens: rows.flatMap((a) => [a.ghsaId, (a.fix as {fixedVersion?: string}).fixedVersion ?? '']).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'requires intersecting version ranges — keyword search cannot',
+      }
+    },
+  },
+  {
+    id: 'Q2-cross-field-high-severity',
+    question: 'List every advisory in the dataset where the attack vector is network, no privileges and no user interaction are required, and the base score is at least 8.0. Give the fix version for each.',
+    kind: 'groq',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter(
+        (a) =>
+          (a.severity as {components?: {attackVector?: string; privilegesRequired?: string; userInteraction?: string}} | undefined)?.components?.attackVector === 'NETWORK' &&
+          (a.severity as {components?: {privilegesRequired?: string}})?.components?.privilegesRequired === 'NONE' &&
+          (a.severity as {components?: {userInteraction?: string}})?.components?.userInteraction === 'NONE' &&
+          (a.severity?.baseScore ?? 0) >= 8,
+      )
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', a.ghsaId, (a.fix as {fixedVersion?: string}).fixedVersion ?? '']).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'pure CVSS-components × score × fix-status intersection',
+      }
+    },
+  },
+  {
+    id: 'Q3-kev-upgrade',
+    question: 'Which advisories in the dataset are listed as actively exploited in the CISA KEV catalog, and what upgrade do they require?',
+    kind: 'groq',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => a.exploitMaturity === 'known_exploited')
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', (a.fix as {fixedVersion?: string}).fixedVersion ?? '']).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'exploitMaturity is a structured field sourced from CISA',
+      }
+    },
+  },
+  {
+    id: 'Q4-cwe-max-score',
+    question: 'Among advisories whose weakness class is prototype pollution, which one has the highest CVSS base score, and since which version is it fixed?',
+    kind: 'groq',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => cweNames(corpus, a).some((n) => n.toLowerCase().includes('prototype pollution')))
+      const best = rows.sort((a, b) => (b.severity?.baseScore ?? 0) - (a.severity?.baseScore ?? 0))[0]
+      if (!best) return {expectedTokens: [], advisoryIds: [], note: 'no prototype-pollution advisories in corpus'}
+      return {
+        expectedTokens: [best.cveId ?? '', best.ghsaId, (best.fix as {fixedVersion?: string}).fixedVersion ?? ''].filter(Boolean),
+        advisoryIds: [best._id],
+        note: 'CWE references + max() over a numeric field',
+      }
+    },
+  },
+  {
+    id: 'Q5-upgrade-list',
+    question: 'For lodash 4.17.15, list every advisory in the dataset that affects it, with the minimal fixed version for each.',
+    kind: 'groq',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => productName(corpus, a.product._ref) === 'lodash' && versionAffected(a, '4.17.15'))
+      return {
+        expectedTokens: rows.map((a) => (a.fix as {fixedVersion?: string}).fixedVersion ?? a.ghsaId),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'version intersection + per-advisory fix versions',
+      }
+    },
+  },
+  {
+    id: 'Q6-aggregate-high-severity',
+    question: 'Across the whole dataset, which package has the most advisories with a CVSS base score of 7.0 or higher?',
+    kind: 'groq',
+    gt: (corpus) => {
+      const counts = new Map<string, number>()
+      for (const a of corpus.advisories) {
+        if ((a.severity?.baseScore ?? 0) >= 7) counts.set(a.product._ref, (counts.get(a.product._ref) ?? 0) + 1)
+      }
+      const best = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]
+      if (!best) return {expectedTokens: [], advisoryIds: [], note: 'no advisories >= 7.0 in corpus'}
+      return {expectedTokens: [productName(corpus, best[0])], advisoryIds: [], note: 'aggregation across the corpus'}
+    },
+  },
+  {
+    id: 'Q7-playbook-kb',
+    question: 'What do the remediation notes recommend for paramiko?',
+    kind: 'kb',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => productName(corpus, a.product._ref) === 'paramiko')
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', a.ghsaId]).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'Knowledge Base mode: prose remediation notes grounded in the advisories',
+      }
+    },
+  },
+  {
+    id: 'Q9-unpatched-profile',
+    question: 'The dataset contains exactly one advisory with no published fix. Which product does it affect, what does its CVSS profile look like (attack vector, privileges, user interaction), and is it listed as actively exploited?',
+    kind: 'groq',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => (a.fix as {status?: string})?.status === 'no_fix')
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', a.ghsaId, productName(corpus, a.product._ref)]).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'fix-status filter + CVSS component readback + exploit-maturity field',
+      }
+    },
+  },
+  {
+    id: 'Q10-latest-prose',
+    question: 'Walk me through the most recent advisory in the dataset: what is affected, how would an attack work, and what upgrade closes it?',
+    kind: 'kb',
+    gt: (corpus) => {
+      const newest = [...corpus.advisories].sort((a, b) => ((a.published ?? '') < (b.published ?? '') ? 1 : -1))[0]
+      if (!newest) return {expectedTokens: [], advisoryIds: [], note: 'empty corpus'}
+      return {
+        expectedTokens: [newest.cveId ?? '', newest.ghsaId, (newest.fix as {fixedVersion?: string}).fixedVersion ?? ''].filter(Boolean),
+        advisoryIds: [newest._id],
+        note: 'KB prose retrieval: the attack walkthrough lives in the advisory details; 2026 CVEs are outside any model training set',
+      }
+    },
+  },
+  {
+    id: 'Q11-unpatched-notes',
+    question: 'According to the remediation notes, which advisory in the dataset has no published fix, and what do the notes recommend in that case?',
+    kind: 'hybrid',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => (a.fix as {status?: string})?.status === 'no_fix')
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', a.ghsaId, productName(corpus, a.product._ref)]).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'playbook prose ("what to do") grounded in fix-status structure (hybrid)',
+      }
+    },
+  },
+  {
+    id: 'Q8-recent-http-clients',
+    question: 'Which of the HTTP-client packages in the dataset (axios, node-fetch, undici, requests) have advisories published in 2026 whose attack vector is network?',
+    kind: 'groq',
+    gt: (corpus) => {
+      const clients = new Set(['axios', 'node-fetch', 'undici', 'requests'])
+      const rows = corpus.advisories.filter(
+        (a) =>
+          clients.has(productName(corpus, a.product._ref)) &&
+          (a.published ?? '').startsWith('2026') &&
+          (a.severity as {components?: {attackVector?: string}} | undefined)?.components?.attackVector === 'NETWORK',
+      )
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', a.ghsaId]).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'date × product × CVSS component conjunction',
+      }
+    },
+  },
+]

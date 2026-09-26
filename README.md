@@ -56,7 +56,10 @@ The corpus is deliberately seeded with 2026 advisories that postdate every model
 3. In `manage`: **API → Tokens → create an org API token** with **Context Viewer** permission → `SANITY_CONTEXT_TOKEN`.
 4. Create a **project** (dataset `production`) → note the project ID → `SANITY_PROJECT_ID`.
 5. Create a **project API token** with **write** access → `SANITY_API_WRITE_TOKEN`.
-6. In the **Context app** (Sanity dashboard): create a Context MCP endpoint named `zerojour`, source = this project's dataset (GROQ mode) + a Knowledge Base built from `playbook` + `advisory` documents (98 docs, under the 150-doc beta limit). Note the endpoint name → `SANITY_CONTEXT_ENDPOINT`.
+6. In the **Context app** (Sanity dashboard) — ONE endpoint serves ONE mode, so create BOTH:
+   - **MCP endpoint `zerojour`** — source = this project's dataset (GROQ mode). This is the structured arm.
+   - **New knowledge base** (title e.g. "ZéroJour remediation notes", source = dataset, material = `playbook` + `advisory` documents — 98 docs, under the 150-doc beta limit) → **Build entries** → then an MCP endpoint **`zerojour-kb`** whose source is that KB (KB mode).
+   - Note both names → `SANITY_CONTEXT_ENDPOINT` / `SANITY_CONTEXT_KB_ENDPOINT`.
 
 ### 2. This repo
 
