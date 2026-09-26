@@ -25,7 +25,7 @@ export async function connectSanityContext(cfg: Config): Promise<SanityContext> 
   const transport = new StreamableHTTPClientTransport(contextUrl(cfg), {
     requestInit: {headers: {Authorization: `Bearer ${cfg.sanityContextToken}`}},
   })
-  const client = new Client({name: 'vulnradar', version: '0.1.0'})
+  const client = new Client({name: 'zerojour', version: '0.1.0'})
   await client.connect(transport)
   const {tools} = await client.listTools()
   const openAiTools: OpenAITool[] = tools.map((t) => ({

@@ -1,4 +1,4 @@
-# VulnRadar
+# ZéroJour
 
 A security-advisories agent that **only works because the content is structured** — built for the [DEV × Sanity Challenge](https://dev.to/challenges/sanity-2026-09-16) (Path One).
 
@@ -56,7 +56,7 @@ The corpus is deliberately seeded with 2026 advisories that postdate every model
 3. In `manage`: **API → Tokens → create an org API token** with **Context Viewer** permission → `SANITY_CONTEXT_TOKEN`.
 4. Create a **project** (dataset `production`) → note the project ID → `SANITY_PROJECT_ID`.
 5. Create a **project API token** with **write** access → `SANITY_API_WRITE_TOKEN`.
-6. In the **Context app** (Sanity dashboard): create a Context MCP endpoint named `vulnradar`, source = this project's dataset (GROQ mode) + a Knowledge Base built from `playbook` + `advisory` documents (98 docs, under the 150-doc beta limit). Note the endpoint name → `SANITY_CONTEXT_ENDPOINT`.
+6. In the **Context app** (Sanity dashboard): create a Context MCP endpoint named `zerojour`, source = this project's dataset (GROQ mode) + a Knowledge Base built from `playbook` + `advisory` documents (98 docs, under the 150-doc beta limit). Note the endpoint name → `SANITY_CONTEXT_ENDPOINT`.
 
 ### 2. This repo
 

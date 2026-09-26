@@ -1,4 +1,4 @@
-// VulnRadar agent. Two answering modes:
+// ZéroJour agent. Two answering modes:
 //   ask    — agent loop over Sanity Context MCP tools (+ one local semver tool)
 //   naive  — the baseline: same model, but only flat keyword-search results
 // Every step is sealed into the NoireBox journal when the server is running.
@@ -12,7 +12,7 @@ import {versionInRange, versionInRangeTool} from './tools.ts'
 
 const MAX_STEPS = 10
 
-const SYSTEM_PROMPT = `You are VulnRadar, an agent answering questions about security advisories in a curated dataset of npm/pip packages, served through Sanity Context.
+const SYSTEM_PROMPT = `You are ZéroJour, an agent answering questions about security advisories in a curated dataset of npm/pip packages, served through Sanity Context.
 
 Method:
 1. Call initial_context once to see the schema.

@@ -156,6 +156,33 @@ export const QUESTIONS: Question[] = [
     },
   },
   {
+    id: 'Q10-latest-prose',
+    question: 'Walk me through the most recent advisory in the dataset: what is affected, how would an attack work, and what upgrade closes it?',
+    kind: 'kb',
+    gt: (corpus) => {
+      const newest = [...corpus.advisories].sort((a, b) => ((a.published ?? '') < (b.published ?? '') ? 1 : -1))[0]
+      if (!newest) return {expectedTokens: [], advisoryIds: [], note: 'empty corpus'}
+      return {
+        expectedTokens: [newest.cveId ?? '', newest.ghsaId, (newest.fix as {fixedVersion?: string}).fixedVersion ?? ''].filter(Boolean),
+        advisoryIds: [newest._id],
+        note: 'KB prose retrieval: the attack walkthrough lives in the advisory details; 2026 CVEs are outside any model training set',
+      }
+    },
+  },
+  {
+    id: 'Q11-unpatched-notes',
+    question: 'According to the remediation notes, which advisory in the dataset has no published fix, and what do the notes recommend in that case?',
+    kind: 'hybrid',
+    gt: (corpus) => {
+      const rows = corpus.advisories.filter((a) => (a.fix as {status?: string})?.status === 'no_fix')
+      return {
+        expectedTokens: rows.flatMap((a) => [a.cveId ?? '', a.ghsaId, productName(corpus, a.product._ref)]).filter(Boolean),
+        advisoryIds: rows.map((a) => a._id),
+        note: 'playbook prose ("what to do") grounded in fix-status structure (hybrid)',
+      }
+    },
+  },
+  {
     id: 'Q8-recent-http-clients',
     question: 'Which of the HTTP-client packages in the dataset (axios, node-fetch, undici, requests) have advisories published in 2026 whose attack vector is network?',
     kind: 'groq',

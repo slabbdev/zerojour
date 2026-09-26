@@ -1,6 +1,6 @@
 // Fetches REAL security advisories from the GitHub Advisory Database
 // (api.github.com/advisories, data licensed CC-BY-4.0) and CISA's Known
-// Exploited Vulnerabilities catalog, then maps them to the VulnRadar schema.
+// Exploited Vulnerabilities catalog, then maps them to the ZéroJour schema.
 // No data is invented: every field traces back to a source URL, and
 // exploitMaturity stays 'unknown' unless CISA lists the CVE.
 
@@ -63,7 +63,7 @@ type GhsaAdvisory = {
 }
 
 async function ghFetch(path: string): Promise<unknown> {
-  const headers: Record<string, string> = {Accept: 'application/vnd.github+json', 'User-Agent': 'vulnradar-seed (challenge submission)'}
+  const headers: Record<string, string> = {Accept: 'application/vnd.github+json', 'User-Agent': 'zerojour-seed (challenge submission)'}
   const token = process.env.GITHUB_TOKEN || (await ghAuthToken())
   if (token) headers.Authorization = `Bearer ${token}`
   const res = await fetch(`https://api.github.com${path}`, {headers})
@@ -99,7 +99,7 @@ function parseRange(range: string): {introduced?: string; fixed?: string; lastAf
 
 async function fetchKevCves(): Promise<Set<string>> {
   const res = await fetch('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', {
-    headers: {'User-Agent': 'vulnradar-seed'},
+    headers: {'User-Agent': 'zerojour-seed'},
   })
   if (!res.ok) throw new Error(`CISA KEV ${res.status}`)
   const json = (await res.json()) as {vulnerabilities: {cveID: string}[]}

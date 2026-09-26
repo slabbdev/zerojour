@@ -99,9 +99,36 @@ export async function naive(question: string): Promise<{answer: string; context:
   return {answer, context, sealed}
 }
 
+// Third eval arm: the model alone, no context, no tools. Controls for
+// memorized CVEs — if this arm scores well, the eval proves nothing.
+export async function direct(question: string): Promise<{answer: string; sealed: number}> {
+  const cfg = loadConfig()
+  requireAgentModel(cfg)
+  const journal = new NoireBoxJournal(cfg)
+  let sealed = 0
+  if (await journal.seal('agent_query', {question, mode: 'no_tools'})) sealed++
+  const messages: ChatMessage[] = [
+    {
+      role: 'system',
+      content:
+        'You are asked a factual question about security advisories in a specific dataset. You have no tools and no data access. Answer from your own knowledge only; if you do not know or cannot verify, say so plainly.',
+    },
+    {role: 'user', content: question},
+  ]
+  const msg = await chat(cfg, messages, [])
+  const answer = msg.content ?? ''
+  if (await journal.seal('no_tools_answer', {question, answer})) sealed++
+  return {answer, sealed}
+}
+
 async function main() {
   const [command, ...rest] = process.argv.slice(2)
   const question = rest.join(' ').trim()
+  if (command === 'serve-ui') {
+    const {startUiServer} = await import('./ui.ts')
+    startUiServer()
+    return
+  }
   if (!question) {
     console.error('Usage: npm run agent -- ask|naive "question"')
     process.exit(1)

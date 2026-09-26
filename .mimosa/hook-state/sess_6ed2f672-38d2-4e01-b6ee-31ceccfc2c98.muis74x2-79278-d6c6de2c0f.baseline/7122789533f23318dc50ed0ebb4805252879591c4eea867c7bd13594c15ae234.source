@@ -7,6 +7,7 @@ export type Config = {
   sanityOrgId: string
   sanityContextEndpoint: string
   sanityContextToken: string
+  sanityContextUrl: string | null
   agentBaseUrl: string
   agentApiKey: string
   agentModel: string
@@ -38,6 +39,7 @@ export function loadConfig(): Config {
     sanityOrgId: process.env.SANITY_ORG_ID ?? '',
     sanityContextEndpoint: process.env.SANITY_CONTEXT_ENDPOINT ?? '',
     sanityContextToken: process.env.SANITY_CONTEXT_TOKEN ?? '',
+    sanityContextUrl: process.env.SANITY_CONTEXT_URL || null,
     agentBaseUrl: process.env.AGENT_BASE_URL ?? 'https://api.openai.com/v1',
     agentApiKey: process.env.AGENT_API_KEY ?? '',
     agentModel: process.env.AGENT_MODEL ?? 'gpt-4.1-mini',
@@ -48,6 +50,14 @@ export function loadConfig(): Config {
 }
 
 export function requireSanityContext(cfg: Config): void {
+  // SANITY_CONTEXT_URL replaces the hosted endpoint entirely (local mocks).
+  if (cfg.sanityContextUrl) {
+    if (!cfg.sanityContextToken) {
+      console.error('Missing SANITY_CONTEXT_TOKEN — see .env.example')
+      process.exit(1)
+    }
+    return
+  }
   const missing = [
     ['SANITY_ORG_ID', cfg.sanityOrgId],
     ['SANITY_CONTEXT_ENDPOINT', cfg.sanityContextEndpoint],
