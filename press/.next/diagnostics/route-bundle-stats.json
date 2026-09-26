@@ -1,0 +1,61 @@
+[
+  {
+    "route": "/redaction",
+    "firstLoadUncompressedJsBytes": 588452,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/2teufj241e5ar.js",
+      ".next/static/chunks/2vbl9d4of-mez.js",
+      ".next/static/chunks/3j-bm04yxtidh.js",
+      ".next/static/chunks/1alljpjtvm174.js",
+      ".next/static/chunks/2eo9s3iq6w2lw.js",
+      ".next/static/chunks/2ixjhsye_h3gm.js",
+      ".next/static/chunks/2-cmc6o6-koja.js",
+      ".next/static/chunks/347xith4z20mr.js",
+      ".next/static/chunks/turbopack-2ax-pntgxkf-b.js"
+    ]
+  },
+  {
+    "route": "/",
+    "firstLoadUncompressedJsBytes": 585215,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/2teufj241e5ar.js",
+      ".next/static/chunks/2vbl9d4of-mez.js",
+      ".next/static/chunks/3j-bm04yxtidh.js",
+      ".next/static/chunks/3vrfufhchbafh.js",
+      ".next/static/chunks/2eo9s3iq6w2lw.js",
+      ".next/static/chunks/2ixjhsye_h3gm.js",
+      ".next/static/chunks/2-cmc6o6-koja.js",
+      ".next/static/chunks/347xith4z20mr.js",
+      ".next/static/chunks/turbopack-2ax-pntgxkf-b.js"
+    ]
+  },
+  {
+    "route": "/advisory/[ghsa]",
+    "firstLoadUncompressedJsBytes": 585215,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/2teufj241e5ar.js",
+      ".next/static/chunks/2vbl9d4of-mez.js",
+      ".next/static/chunks/3j-bm04yxtidh.js",
+      ".next/static/chunks/3vrfufhchbafh.js",
+      ".next/static/chunks/2eo9s3iq6w2lw.js",
+      ".next/static/chunks/2ixjhsye_h3gm.js",
+      ".next/static/chunks/2-cmc6o6-koja.js",
+      ".next/static/chunks/347xith4z20mr.js",
+      ".next/static/chunks/turbopack-2ax-pntgxkf-b.js"
+    ]
+  },
+  {
+    "route": "/_not-found",
+    "firstLoadUncompressedJsBytes": 576351,
+    "firstLoadChunkPaths": [
+      ".next/static/chunks/2teufj241e5ar.js",
+      ".next/static/chunks/2vbl9d4of-mez.js",
+      ".next/static/chunks/3j-bm04yxtidh.js",
+      ".next/static/chunks/2eo9s3iq6w2lw.js",
+      ".next/static/chunks/2ixjhsye_h3gm.js",
+      ".next/static/chunks/2-cmc6o6-koja.js",
+      ".next/static/chunks/347xith4z20mr.js",
+      ".next/static/chunks/turbopack-2ax-pntgxkf-b.js"
+    ]
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/advisory/[ghsa]/page": "/advisory/[ghsa]",
+  "/api/redaction/route": "/api/redaction",
+  "/page": "/",
+  "/redaction/page": "/redaction"
+}
