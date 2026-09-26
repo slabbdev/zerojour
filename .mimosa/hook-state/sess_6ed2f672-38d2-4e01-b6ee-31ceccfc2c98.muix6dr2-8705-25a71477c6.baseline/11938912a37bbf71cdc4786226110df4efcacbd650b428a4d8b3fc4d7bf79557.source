@@ -6,7 +6,7 @@
 import {assistantMessage, chat, toolResultMessage, type ChatMessage, type ToolCall} from './llm.ts'
 import {baselineContext, loadCorpus, type Corpus} from './baseline.ts'
 import {loadConfig, requireAgentModel, requireSanityContext} from './config.ts'
-import {connectSanityContext, callMcpTool} from './mcp.ts'
+import {connectSanityContext} from './mcp.ts'
 import {NoireBoxJournal} from './noirebox.ts'
 import {versionInRange, versionInRangeTool} from './tools.ts'
 
@@ -18,12 +18,13 @@ Method:
 1. Call initial_context once to see the schema.
 2. Use schema_explorer before writing non-trivial GROQ.
 3. Use groq_query to answer. Useful shapes:
-   - Documents have _type "advisory" | "product" | "cwe" | "playbook".
+   - Documents have _type "advisory" | "product" | "cwe" | "playbook" | "pressArticle".
    - CVSS components live at severity.components.* (e.g. severity.components.attackVector == "NETWORK").
    - Fix status lives at fix.status ("fixed" | "workaround_available" | "no_fix") and fix.fixedVersion.
    - Exploit maturity lives at exploitMaturity ("known_exploited" comes from the CISA KEV catalog).
    - References: product->{name, ecosystem}, cwe[]->{cweId, name}.
 4. GROQ compares version strings lexicographically and cannot do semver. To test whether a version is affected, fetch the candidate advisory ranges, then call the local version_in_range tool for each range.
+5. Questions about remediation guidance ("what do the notes recommend", "how to decide") are served by the Knowledge Base: use kb_knowledge_base_read with the kb id and paths from its outline (kb_initial_context lists them).
 
 Rules:
 - Answer ONLY from tool results. Cite CVE/GHSA IDs and fixed versions exactly as returned.
@@ -41,8 +42,8 @@ export async function ask(question: string): Promise<AskResult> {
   let sealed = 0
   if (await journal.seal('agent_query', {question, mode: 'structured'})) sealed++
 
-  const {client, tools} = await connectSanityContext(cfg)
-  const allTools = [...tools, versionInRangeTool]
+  const ctx = await connectSanityContext(cfg)
+  const allTools = [...ctx.tools, versionInRangeTool]
   const messages: ChatMessage[] = [
     {role: 'system', content: SYSTEM_PROMPT},
     {role: 'user', content: question},
@@ -54,7 +55,7 @@ export async function ask(question: string): Promise<AskResult> {
     if (!msg.tool_calls?.length) {
       const answer = msg.content ?? ''
       if (await journal.seal('agent_answer', {question, answer, steps})) sealed++
-      await client.close()
+      await ctx.close()
       return {answer, steps, sealed}
     }
     messages.push(assistantMessage(msg))
@@ -64,7 +65,7 @@ export async function ask(question: string): Promise<AskResult> {
       if (call.function.name === 'version_in_range') {
         text = String(versionInRange(args as Parameters<typeof versionInRange>[0]))
       } else {
-        text = await callMcpTool(client, call.function.name, args)
+        text = await ctx.call(call.function.name, args)
       }
       const preview = text.length > 300 ? `${text.slice(0, 300)}…` : text
       steps.push({tool: call.function.name, args, resultPreview: preview})
@@ -72,7 +73,7 @@ export async function ask(question: string): Promise<AskResult> {
       messages.push(toolResultMessage(call.id, text))
     }
   }
-  await client.close()
+  await ctx.close()
   throw new Error(`agent exceeded ${MAX_STEPS} steps without a final answer`)
 }
 

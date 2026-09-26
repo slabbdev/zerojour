@@ -7,6 +7,7 @@ export type Config = {
   sanityOrgId: string
   sanityContextEndpoint: string
   sanityContextToken: string
+  sanityContextKbEndpoint: string | null
   sanityContextUrl: string | null
   agentBaseUrl: string
   agentApiKey: string
@@ -39,6 +40,7 @@ export function loadConfig(): Config {
     sanityOrgId: process.env.SANITY_ORG_ID ?? '',
     sanityContextEndpoint: process.env.SANITY_CONTEXT_ENDPOINT ?? '',
     sanityContextToken: process.env.SANITY_CONTEXT_TOKEN ?? '',
+    sanityContextKbEndpoint: process.env.SANITY_CONTEXT_KB_ENDPOINT || null,
     sanityContextUrl: process.env.SANITY_CONTEXT_URL || null,
     agentBaseUrl: process.env.AGENT_BASE_URL ?? 'https://api.openai.com/v1',
     agentApiKey: process.env.AGENT_API_KEY ?? '',
