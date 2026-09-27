@@ -1,7 +1,7 @@
 <!-- DEV.to submission — Path One · tag: #sanitychallenge
      Use the official template via the challenge page button, then paste this content.
      Suggested tags: #sanitychallenge #ai #security #mcp
-     Cover image suggestion: docs/screens/agent-ui-answer.png -->
+     Cover image suggestion: docs/screens/agent-duel.png -->
 
 # ZéroJour: an advisories agent that only works because the content is structured — and we prove it
 
@@ -9,7 +9,7 @@ Most entries will *claim* their agent works thanks to structured content. This o
 
 ZéroJour is an agent that answers security-advisory questions — the kind an analyst actually asks: *"I run axios 1.2.0, which advisories affect exactly that version?"* or *"network vector, no privileges, no user interaction, score 8+, what fixes each one?"* Answering requires intersecting version ranges, CVSS components, fix status and CWE references across 82 real advisories. A keyword search cannot do that — and we didn't argue it, we measured it.
 
-{% embed https://github.com/slabbdev/zerojour %}
+{% github slabbdev/zerojour %}
 
 ## The 3-arm eval
 
@@ -23,9 +23,7 @@ The same model — `glm-4.5-flash`, a free-tier model, via an OpenAI-compatible 
 
 Stable across two independent full runs. The bare model scores **zero**: the corpus is deliberately seeded with **2026 advisories that postdate every model's training data** (including one with no published fix at all), so regurgitation cannot fake a win. Ground truth is computed independently from the seed data with plain predicates and semver — never through Sanity.
 
-![The duel: same question, two answers — structure left, keyword search right](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/agent-duel.png)
-
-And the full eval run, question by question:
+And the full eval run, question by question — note the no-tools arm failing on all three sample questions above it:
 
 ![The real eval run: three arms side by side, question by question](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/eval-run.png)
 
@@ -34,7 +32,7 @@ And the full eval run, question by question:
 - *Aggregation* ("which package has the most advisories ≥ 7.0?"): the flash model twice claimed `paramiko` — the dataset says `pillow` (4 advisories ≥ 7.0; paramiko has 2). Counting groups reliably at long context is exactly what small models do badly, and we say so instead of hiding it.
 - *"Most recent advisory"*: the model twice grabbed the first document in default storage order (a 2018 advisory) instead of applying `order(published desc)`.
 
-A stronger model is one env variable away (`AGENT_MODEL`) — the harness, the sealed transcripts and the eval replay with any OpenAI-compatible model.
+A stronger model is one env variable away (`AGENT_MODEL`) — the harness, the sealed transcripts and the eval all replay with any OpenAI-compatible model.
 
 ## What I Built
 
