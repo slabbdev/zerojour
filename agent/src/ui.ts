@@ -37,6 +37,10 @@ const PAGE = `<!doctype html>
   .scoreboard .note { color:var(--muted); font-size:12px; font-style:italic; margin-left:auto; }
   main { max-width:1200px; margin:0 auto; padding:10px 28px 60px; }
   .explain { border-left:3px solid var(--blue); padding:10px 16px; color:var(--ink); margin:10px 0 16px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; }
+  .exq { border:1px solid var(--line); background:var(--panel); color:var(--ink); border-radius:20px; padding:8px 15px; font:13px Inter; cursor:pointer; text-align:left; }
+  .exq b { color:var(--blue); font-weight:600; }
+  .exq:hover { border-color:var(--blue); background:#16202e; }
   .explain b { color:var(--blue); }
   .row { display:flex; gap:10px; margin:8px 0 18px; }
   textarea { flex:1; min-height:78px; background:var(--panel); color:#e8edf4; border:1px solid var(--line); border-radius:12px; padding:14px; font:inherit; resize:vertical; }
@@ -112,6 +116,7 @@ const PAGE = `<!doctype html>
     Right, it only gets flat keyword-search results over the same 82 documents.
     Only one of them can cross-check a version, a vector and a fix at the same time.
   </div>
+  <div class="chips" id="chips"></div>
   <div class="row">
     <textarea id="question" placeholder="e.g. I run axios 1.2.0 — which advisories affect exactly that version, and what fixes each one?"></textarea>
   </div>
@@ -201,6 +206,32 @@ const PAGE = `<!doctype html>
     closeList()
     return out
   }
+
+  // ready-made questions: one click fills the box AND starts the duel
+  const EXAMPLES = [
+    {label: '<b>Am I affected?</b> I run axios 1.2.0 — what hits me, what fixes it',
+     q: 'I run axios 1.2.0 in production. Which advisories in the dataset affect exactly that version, and what is the first version that fixes each one?'},
+    {label: '<b>The cross-check</b> network + no privileges + no UI + score 8+',
+     q: 'List every advisory where the attack vector is network, no privileges and no user interaction are required, and the base score is at least 8.0. Give the fix version for each.'},
+    {label: '<b>Actively exploited</b> the CISA KEV view',
+     q: 'Which advisories in the dataset are listed as actively exploited in the CISA KEV catalog, and what upgrade do they require?'},
+    {label: '<b>The unpatched one</b> zero fix published',
+     q: 'The dataset contains exactly one advisory with no published fix. Which product does it affect, what does its CVSS profile look like, and is it listed as actively exploited?'},
+    {label: '<b>Remediation notes</b> Knowledge Base mode',
+     q: 'What do the remediation notes recommend for paramiko?'},
+    {label: '<b>The hard aggregate</b> may trip small models — honest',
+     q: 'Across the whole dataset, which package has the most advisories with a CVSS base score of 7.0 or higher?'},
+  ]
+  const chipBox = $('chips')
+  for (const ex of EXAMPLES) {
+    const b = document.createElement('button')
+    b.className = 'exq'
+    b.innerHTML = ex.label
+    b.title = ex.q
+    b.onclick = () => { $('question').value = ex.q; duel() }
+    chipBox.appendChild(b)
+  }
+
   async function journal() {
     try {
       const j = await (await fetch('/api/journal')).json()
