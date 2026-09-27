@@ -33,4 +33,4 @@ What went wrong and what it taught me:
 
 ### Code
 
-[repo link] — `press/` folder. Next.js App Router, @sanity/client, zero UI libraries: the newspaper look is one stylesheet on purpose.
+[github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) (`press/` folder) — Next.js App Router, @sanity/client, zero UI libraries: the newspaper look is one stylesheet on purpose.

@@ -10,15 +10,21 @@ Most challenge entries will *claim* their agent works thanks to structured conte
 
 ZéroJour is an agent that answers security-advisory questions — the kind an analyst actually asks: *"I run axios 1.2.0, which advisories affect exactly that version?"* or *"network vector, no privileges, no user interaction, score 8+, what fixes each one?"* Answering requires intersecting version ranges, CVSS components, fix status and CWE references across 82 real advisories. That is impossible for keyword search, and we didn't argue it — we measured it.
 
-**The 3-arm eval** (the same model, the same 82 documents):
+**The 3-arm eval** (the same model — glm-4.5-flash, a free-tier model — the same 82 documents, full runs sealed into a NoireBox journal):
 
-| Arm | What it gets | [RESULT — fill after real-model eval run] |
+| Arm | What it gets | Score |
 |---|---|---|
-| Structured | Sanity Context MCP (GROQ + Knowledge Base) | X/Y |
-| Naive | Flat keyword search over the same docs | X/Y |
-| No-tools | The model alone (memorization control) | X/Y |
+| Structured | Sanity Context MCP (GROQ + Knowledge Base) | **9/11** |
+| Naive | Flat keyword search over the same docs | **1/11** |
+| No-tools | The model alone (memorization control) | **0/11** |
 
-Ground truth is computed independently from the seed data with plain predicates and semver — never through Sanity. The corpus is deliberately seeded with **2026 advisories that postdate every model's training data** (including one with no published fix at all), so regurgitation cannot fake a win.
+Stable across two independent full runs. The bare model scores **zero**: the corpus is deliberately seeded with **2026 advisories that postdate every model's training data** (including one with no published fix at all), so regurgitation cannot fake a win. Ground truth is computed independently from the seed data with plain predicates and semver — never through Sanity.
+
+**The two misses, in full honesty** (both model-side, both verifiable):
+- *Aggregation* ("which package has the most advisories ≥ 7.0?"): the flash model twice claimed `paramiko` — the dataset says `pillow` (4 advisories ≥ 7.0; paramiko has 2). Counting groups reliably at long context is exactly what small models do badly, and we say so instead of hiding it.
+- *"Most recent advisory"*: the model twice grabbed the first document in default storage order (a 2018 advisory) instead of applying `order(published desc)`. Prompt guards reduced it to a coin flip, not a fix.
+
+A stronger model is one env variable away (`AGENT_MODEL`) — the harness, the sealed transcripts and the eval replay with any OpenAI-compatible model.
 
 ### Demo
 
@@ -44,7 +50,7 @@ curl -G "https://ngvnxjkl.api.sanity.io/v1/data/query/production" \
 
 - Project ID: `ngvnxjkl` · dataset: `production` (public)
 - Public query URL: https://ngvnxjkl.api.sanity.io/v1/data/query/production
-- Repo: [github.com/slabbdev/zerojour — push before publishing this post]
+- Repo: [github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour)
 
 ### Bonus: auditability — sealing the agent with NoireBox
 
@@ -54,4 +60,4 @@ The uploader's Agent Sessions show your work; the journal proves it wasn't touch
 
 ### Code
 
-[repo link] — `npm run eval` replays everything. 15 tests, mock-MCP integration suite, and a zero-build demo UI.
+[github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `npm run eval` replays everything. 15 tests, mock-MCP integration suite, and a zero-build demo UI.
