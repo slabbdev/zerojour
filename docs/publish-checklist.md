@@ -2,7 +2,8 @@
 
 ## Before publishing (Oct 1, ~08:30 Paris)
 
-- [ ] Verify the repo is green: https://github.com/slabbdev/zerojour (screenshots visible in docs/screens/)
+- [ ] Verify the repo is green: https://github.com/slabbdev/zerojour (screenshots + demo.gif visible in docs/screens/)
+- [ ] Optional video embed: upload docs/screens/demo.mp4 (41 s) to YouTube (unlisted) and paste the URL in the Path One post — dev.to embeds YouTube natively
 - [ ] Vercel (optional but strong): https://vercel.com/new → import `slabbdev/zerojour` → **Root Directory: `press`** → env var `SANITY_API_WRITE_TOKEN` (value from local `.env`) → Deploy → copy the URL into both `[VERCEL-URL]` placeholders in docs/post-path-two.md
 - [ ] Sanity services alive: dashboard shows the dataset; the Context endpoints (`zerojour`, `zerojour-kb`) listed in the Context app
 

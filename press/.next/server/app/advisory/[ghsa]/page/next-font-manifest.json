@@ -1,6 +1,10 @@
 {
   "pages": {},
-  "app": {},
-  "appUsingSizeAdjust": false,
+  "app": {
+    "[project]/press/app/advisory/[ghsa]/page": [
+      "static/media/0d13b97df6d5443d-s.p.1021ek5wvrjzi.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
   "pagesUsingSizeAdjust": false
 }

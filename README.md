@@ -1,6 +1,10 @@
 # ZéroJour
 
+![ZéroJour — demo](docs/screens/demo.gif)
+
 A security-advisories agent that **only works because the content is structured** — built for the [DEV × Sanity Challenge](https://dev.to/challenges/sanity-2026-09-16) (Path One).
+
+Full film: [docs/screens/demo.mp4](docs/screens/demo.mp4) (41 s). Every frame in both files is a real capture — nothing staged.
 
 Ask it: *"Which advisories need no privileges and no user interaction, come through the network, score 8.0+, and what fixes each one?"* Answering that requires crossing version ranges, CVSS components and fix status across 80+ advisories. A keyword search cannot do that. This repo proves the difference: the same model answers every question **three** ways — through a **Sanity Context** endpoint (GROQ + Knowledge Base), through **flat keyword search** over the same documents, and with **no data access at all** (the memorization control: if the bare model scores well, the eval proves nothing) — and a ground-truth eval scores all three.
 
