@@ -4,3 +4,5 @@ seed/data/
 *.log
 dist/
 .mimosa/
+press/.next/
+press/.mimosa/
