@@ -51,7 +51,12 @@ const PAGE = `<!doctype html>
   .panel.lose .head { background:#2a1512; color:var(--red); border-bottom:1px solid #3a1d1d; }
   .panel .head .sub { display:block; font-weight:400; color:var(--muted); font-size:12px; margin-top:2px; }
   .panel .body { padding:16px; }
-  .answer { white-space:pre-wrap; font-size:14.5px; }
+  .answer { font-size:14.5px; }
+  .answer h3 { font:700 15.5px Inter; margin:14px 0 6px; color:#e8edf4; }
+  .answer h4 { font:600 14px Inter; margin:12px 0 4px; color:#c9d3e0; }
+  .answer ul { margin:6px 0 10px; padding-left:20px; }
+  .answer li { margin:3px 0; }
+  .answer code { font:12.5px 'IBM Plex Mono', monospace; background:#1a2230; border:1px solid var(--line); border-radius:5px; padding:1px 5px; color:#9ecbff; }
   .meta { margin-top:10px; font-size:12px; color:var(--muted); }
   details { margin-top:12px; border-top:1px dashed var(--line); padding-top:10px; }
   summary { cursor:pointer; color:var(--blue); font:600 12px 'IBM Plex Mono', monospace; }
@@ -166,6 +171,36 @@ const PAGE = `<!doctype html>
 <script>
   const $ = (id) => document.getElementById(id)
   const esc = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  // tiny markdown renderer: headings, bold, inline code, bullet/numbered lists.
+  // content is HTML-escaped FIRST, then patterns are turned into tags.
+  function md(src) {
+    const lines = esc(src ?? '').split('\\n')
+    let out = '', inList = false
+    const inline = (t) => t
+      .replace(/\\*\\*([^*]+)\\*\\*/g, '<b>$1</b>')
+      .replace(/\\x60([^\\x60]+)\\x60/g, '<code>$1</code>')
+    const closeList = () => { if (inList) { out += '</ul>'; inList = false } }
+    for (const raw of lines) {
+      const line = raw.replace(/\\s+$/, '')
+      if (/^#{1,4}\\s+/.test(line)) {
+        closeList()
+        out += '<h3>' + inline(line.replace(/^#{1,4}\\s+/, '')) + '</h3>'
+      } else if (/^[-*]\\s+/.test(line)) {
+        if (!inList) { out += '<ul>'; inList = true }
+        out += '<li>' + inline(line.replace(/^[-*]\\s+/, '')) + '</li>'
+      } else if (/^\\d+\\.\\s+/.test(line)) {
+        if (!inList) { out += '<ul>'; inList = true }
+        out += '<li>' + inline(line.replace(/^\\d+\\.\\s+/, '')) + '</li>'
+      } else if (line.trim() === '') {
+        closeList()
+      } else {
+        closeList()
+        out += '<p>' + inline(line) + '</p>'
+      }
+    }
+    closeList()
+    return out
+  }
   async function journal() {
     try {
       const j = await (await fetch('/api/journal')).json()
@@ -206,10 +241,10 @@ const PAGE = `<!doctype html>
       const res = await fetch('/api/duel', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question})})
       const j = await res.json()
       if (j.error) { $('status').hidden = false; $('status').textContent = 'Error: ' + j.error; return }
-      $('structAnswer').textContent = j.structured.answer
+      $('structAnswer').innerHTML = md(j.structured.answer)
       $('structTrace').innerHTML = traceHtml(j.structured.steps)
       $('structSub').textContent = j.structured.steps.length + ' tool calls · ' + j.structured.sealed + ' events sealed'
-      $('naiveAnswer').textContent = j.naive.answer
+      $('naiveAnswer').innerHTML = md(j.naive.answer)
       $('naiveTrace').innerHTML = '<div class="step">' + esc(j.naive.context).slice(0, 600) + '</div>'
       $('naiveSub').textContent = j.naive.sealed + ' events sealed'
       journal()
@@ -229,7 +264,7 @@ const PAGE = `<!doctype html>
       const res = await fetch('/api/ask', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question, mode: $('mode').value})})
       const j = await res.json()
       if (j.error) { $('status').textContent = 'Error: ' + j.error; return }
-      $('singleAnswer').textContent = j.answer
+      $('singleAnswer').innerHTML = md(j.answer)
       $('singleTrace').innerHTML = traceHtml(j.steps)
       $('status').hidden = true
       journal()
