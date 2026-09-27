@@ -115,7 +115,14 @@ const PAGE = `<!doctype html>
     <b>Sanity Context</b> (structured fields: version ranges, CVSS components, fix status).
     Right, it only gets flat keyword-search results over the same 82 documents.
     Only one of them can cross-check a version, a vector and a fix at the same time.
+    <div style="margin-top:8px; color:var(--muted); font-size:13px;">
+      ZéroJour goes <b>nowhere else</b>: it only knows the 82 real advisories in this dataset —
+      the ones printed in the paper. Ask it anything else and it will say it is not in the dataset.
+      That closure is the point: every answer traces back to a specific filed advisory.
+      Click a package to ask about it:
+    </div>
   </div>
+  <div class="chips" id="pkgChips"></div>
   <div class="chips" id="chips"></div>
   <div class="row">
     <textarea id="question" placeholder="e.g. I run axios 1.2.0 — which advisories affect exactly that version, and what fixes each one?"></textarea>
@@ -230,6 +237,21 @@ const PAGE = `<!doctype html>
     b.title = ex.q
     b.onclick = () => { $('question').value = ex.q; duel() }
     chipBox.appendChild(b)
+  }
+
+  // the 16 packages of the dataset — click to ask about one
+  const PACKAGES = ['axios', 'lodash', 'fastify', 'express', 'next', 'minimist', 'node-fetch', 'jsonwebtoken', 'tough-cookie', 'undici', 'jquery', 'requests', 'flask', 'django', 'paramiko', 'pillow']
+  const pkgBox = $('pkgChips')
+  for (const name of PACKAGES) {
+    const b = document.createElement('button')
+    b.className = 'exq'
+    b.innerHTML = '<b>' + name + '</b>'
+    b.title = 'Which advisories affect ' + name + ', and what fixes each one?'
+    b.onclick = () => {
+      $('question').value = 'List every advisory in the dataset that affects ' + name + ', with the CVSS score and the fix version for each.'
+      duel()
+    }
+    pkgBox.appendChild(b)
   }
 
   async function journal() {
