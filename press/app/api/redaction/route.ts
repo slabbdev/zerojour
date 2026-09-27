@@ -1,6 +1,8 @@
-import {NextResponse} from 'next/server'
+import {randomBytes} from 'node:crypto'
 import {client, writeClient} from '../../../lib/sanity'
 import type {Advisory} from '../../../lib/sanity'
+
+import {NextResponse} from 'next/server'
 
 // The editorial workflow, implemented on the dataset itself:
 //   draft  — the machine composes an article from the advisory's typed fields
@@ -8,7 +10,17 @@ import type {Advisory} from '../../../lib/sanity'
 //   published — the article appears as part of the paper's record
 // Compose is deterministic: it prints the STRUCTURE, it does not invent prose.
 
-function composeArticle(a: Advisory): {title: string; body: string} {
+function block(text: string): Record<string, unknown> {
+  return {
+    _type: 'block',
+    _key: randomBytes(6).toString('hex'),
+    style: 'normal',
+    markDefs: [],
+    children: [{_type: 'span', _key: randomBytes(6).toString('hex'), text, marks: []}],
+  }
+}
+
+function composeArticle(a: Advisory): {title: string; body: Record<string, unknown>[]} {
   const id = a.cveId ?? a.ghsaId
   const c = a.severity?.components ?? {}
   const profile = [
@@ -17,6 +29,7 @@ function composeArticle(a: Advisory): {title: string; body: string} {
     c.userInteraction === 'NONE' && 'no user interaction',
     c.scope === 'CHANGED' && 'may cross security scopes',
   ].filter(Boolean) as string[]
+  const cleanDetails = (a.details ?? '').replace(/^#+\s*/gm, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
   const paras = [
     `${a.productName} (${a.ecosystem}) is affected by ${id}. The advisory records a CVSS base score of ${a.severity?.baseScore ?? 'n/a'}/10.`,
     profile.length ? `The structured profile reads: ${profile.join('; ')}.` : '',
@@ -26,11 +39,11 @@ function composeArticle(a: Advisory): {title: string; body: string} {
     a.exploitMaturity === 'known_exploited'
       ? 'The CISA KEV catalog lists it as actively exploited — the front page is reserved for it.'
       : '',
-    a.details ? `From the advisory record: ${a.details.slice(0, 400)}${a.details.length > 400 ? '…' : ''}` : '',
+    cleanDetails ? `From the advisory record: ${cleanDetails.slice(0, 400)}${cleanDetails.length > 400 ? '…' : ''}` : '',
   ].filter(Boolean)
   return {
     title: `${id}: ${a.title}`,
-    body: paras.join('\n\n'),
+    body: paras.map(block),
   }
 }
 
@@ -38,7 +51,13 @@ export async function POST(req: Request) {
   if (!writeClient) return NextResponse.json({error: 'no write token — newsroom is read-only'}, {status: 501})
   const {ghsa} = (await req.json()) as {ghsa?: string}
   if (!ghsa) return NextResponse.json({error: 'missing ghsa'}, {status: 400})
-  const a = await client.fetch<Advisory | null>('*[_type=="advisory" && ghsaId==$ghsa][0]', {ghsa})
+  const a = await client.fetch<Advisory | null>(
+    `*[_type=="advisory" && ghsaId==$ghsa][0]{
+      _id, ghsaId, cveId, title, summary, details, published, exploitMaturity, severity, fix,
+      "productName": product->.name, "ecosystem": product->.ecosystem
+    }`,
+    {ghsa},
+  )
   if (!a) return NextResponse.json({error: 'advisory not found'}, {status: 404})
   const {title, body} = composeArticle(a)
   const doc = {

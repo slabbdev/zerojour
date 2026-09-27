@@ -58,6 +58,8 @@ LLM logs are the only logs nobody trusts by default. So every step of this agent
 
 The uploader's Agent Sessions show your work; the journal proves it wasn't touched afterwards. Same instinct, cryptographic.
 
+**And sealing is not ZéroJour-specific.** NoireBox ships a standard MCP server, so *your* agent — whoever is reading this — can mount it with one config block and get the same tamper-evident trail: [docs/witness-for-any-agent.md](https://github.com/slabbdev/zerojour/blob/main/docs/witness-for-any-agent.md). Running an entry for this challenge? Seal your own. Nobody should take our word for what an agent did — including us.
+
 ### Code
 
 [github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `npm run eval` replays everything. 15 tests, mock-MCP integration suite, and a zero-build demo UI.
