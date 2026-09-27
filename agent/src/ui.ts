@@ -19,13 +19,13 @@ const PAGE = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>ZéroJour — the duel: structure vs keyword search</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root { color-scheme: dark; --bg:#0b0e13; --panel:#121821; --line:#232a35; --ink:#d7dde6; --muted:#7d8b9e; --green:#3fb950; --red:#f85149; --blue:#7fb2e5; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter, ui-sans-serif, system-ui, sans-serif; }
   header { display:flex; align-items:baseline; gap:16px; padding:18px 28px; border-bottom:1px solid var(--line); }
-  .wordmark { font-family:'Pirata One', serif; font-size:34px; letter-spacing:.02em; color:#f6f1e5; }
+  .wordmark { font-family:'Playfair Display', Georgia, serif; font-weight:900; text-transform:uppercase; letter-spacing:.01em; font-size:34px; letter-spacing:.02em; color:#f6f1e5; }
   header .tag { color:var(--muted); font-size:13px; }
   header .chain { margin-left:auto; font:600 12px 'IBM Plex Mono', monospace; color:var(--green); border:1px solid var(--green); border-radius:20px; padding:4px 12px; }
   header .chain.bad { color:var(--red); border-color:var(--red); }
@@ -73,7 +73,7 @@ const PAGE = `<!doctype html>
   .face .sub { font-size:11.5px; color:var(--muted); margin-top:4px; }
   .face.live { animation:pulse 1.6s ease-in-out infinite; }
   .face.g.live { border-color:var(--green); } .face.r.live { border-color:var(--red); }
-  .vs { font-family:'Pirata One', serif; font-size:54px; color:#f6f1e5; animation:vsPulse 1.6s ease-in-out infinite; }
+  .vs { font-family:'Playfair Display', Georgia, serif; font-weight:900; font-size:54px; color:#f6f1e5; animation:vsPulse 1.6s ease-in-out infinite; }
   @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(127,178,229,0); } 50% { box-shadow:0 0 22px 2px rgba(127,178,229,.25); } }
   @keyframes vsPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
   .track { height:6px; border-radius:6px; background:var(--line); margin:26px auto 14px; max-width:520px; overflow:hidden; }

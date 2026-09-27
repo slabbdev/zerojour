@@ -20,10 +20,13 @@ a { color: inherit; }
   text-align: center;
 }
 .masthead h1 {
-  font-size: clamp(42px, 7vw, 78px);
-  letter-spacing: 0.04em;
+  font-family: var(--masthead), Georgia, 'Times New Roman', serif;
+  font-size: clamp(46px, 7.4vw, 86px);
+  letter-spacing: 0.01em;
   margin: 0;
-  font-weight: 700;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.02;
 }
 .masthead .tagline { font-style: italic; color: var(--muted); margin-top: 6px; }
 .dateline {

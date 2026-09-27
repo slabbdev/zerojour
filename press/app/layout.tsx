@@ -1,9 +1,9 @@
 import type {Metadata} from 'next'
-import {Pirata_One} from 'next/font/google'
+import {Playfair_Display} from 'next/font/google'
 import './globals.css'
 import Ticker from '../components/Ticker'
 
-const mastheadFont = Pirata_One({weight: '400', subsets: ['latin'], display: 'swap'})
+const mastheadFont = Playfair_Display({weight: '900', style: 'normal', subsets: ['latin'], display: 'swap'})
 
 export const metadata: Metadata = {
   title: 'ZéroJour — the zero-day paper',
@@ -16,7 +16,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body>
         <Ticker />
         <header className="masthead">
-          <h1 className={mastheadFont.className}>ZÉROJOUR</h1>
+          <h1 style={{fontFamily: mastheadFont.style.fontFamily, fontWeight: 900}}>ZÉROJOUR</h1>
           <div className="tagline">The zero-day paper — printed from structured content, not scraped prose.</div>
           <div className="dateline">
             <span>Permanent edition</span>
