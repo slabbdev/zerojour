@@ -61,6 +61,29 @@ const PAGE = `<!doctype html>
   .status { font:13px 'IBM Plex Mono', monospace; color:var(--muted); padding:14px 4px; }
   .foot { text-align:center; color:var(--muted); font-size:12px; padding:26px 0 6px; }
   a { color:var(--blue); }
+  /* the duel-wait overlay: the wait is part of the show */
+  #overlay { position:fixed; inset:0; background:rgba(11,14,19,.88); backdrop-filter:blur(5px);
+             display:flex; align-items:center; justify-content:center; z-index:50; }
+  #overlay[hidden] { display:none; }
+  .arena { text-align:center; max-width:720px; padding:30px; }
+  .arena .faces { display:flex; align-items:center; justify-content:center; gap:34px; }
+  .face { border:1px solid var(--line); border-radius:14px; padding:18px 26px; background:var(--panel); width:220px; }
+  .face .name { font:800 15px Inter; letter-spacing:.06em; }
+  .face.g .name { color:var(--green); } .face.r .name { color:var(--red); }
+  .face .sub { font-size:11.5px; color:var(--muted); margin-top:4px; }
+  .face.live { animation:pulse 1.6s ease-in-out infinite; }
+  .face.g.live { border-color:var(--green); } .face.r.live { border-color:var(--red); }
+  .vs { font-family:'Pirata One', serif; font-size:54px; color:#f6f1e5; animation:vsPulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(127,178,229,0); } 50% { box-shadow:0 0 22px 2px rgba(127,178,229,.25); } }
+  @keyframes vsPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.12); } }
+  .track { height:6px; border-radius:6px; background:var(--line); margin:26px auto 14px; max-width:520px; overflow:hidden; }
+  .track i { display:block; height:100%; width:34%; border-radius:6px;
+             background:linear-gradient(90deg, var(--green), var(--blue), var(--red));
+             animation:slide 1.8s ease-in-out infinite; }
+  @keyframes slide { 0% { transform:translateX(-110%);} 100% { transform:translateX(320%);} }
+  .caption { font:600 14px 'IBM Plex Mono', monospace; color:var(--ink); min-height:44px; max-width:640px; margin:0 auto; }
+  .caption .k { color:var(--blue); }
+  .hint { font-size:12px; color:var(--muted); margin-top:12px; }
 </style>
 </head>
 <body>
@@ -98,6 +121,20 @@ const PAGE = `<!doctype html>
   </div>
 
   <div id="status" class="status" hidden></div>
+
+  <div id="overlay" hidden>
+    <div class="arena">
+      <div class="faces">
+        <div class="face g live" id="faceG"><div class="name">WITH STRUCTURE</div><div class="sub">Sanity Context · GROQ + KB</div></div>
+        <div class="vs">VS</div>
+        <div class="face r live" id="faceR"><div class="name">KEYWORD SEARCH</div><div class="sub">flat text · same 82 docs</div></div>
+      </div>
+      <div class="track"><i></i></div>
+      <div class="caption" id="caption"></div>
+      <div class="hint">real model · real dataset · every step sealed — this usually takes 30–90 seconds</div>
+    </div>
+  </div>
+
   <div class="cols" id="duelCols" hidden>
     <div class="panel win" id="pStruct">
       <div class="head">WITH STRUCTURE — Sanity Context (GROQ + KB)
@@ -153,21 +190,31 @@ const PAGE = `<!doctype html>
     $('duelCols').hidden = false; $('singleCard').hidden = true
     $('structAnswer').textContent = ''; $('naiveAnswer').textContent = ''
     $('structSub').textContent = 'working…'; $('naiveSub').textContent = 'working…'
-    $('status').hidden = false; $('status').textContent = 'the model is answering twice — the structured arm walks the dataset, the keyword arm gets flat text…'
+    // the wait is part of the show: rotate through TRUE phase captions
+    const captions = [
+      'connecting to the <span class="k">Sanity Context</span> endpoint…',
+      'the structured arm walks the dataset — <span class="k">GROQ queries</span> on version ranges, CVSS components, fix status…',
+      'intersecting candidate ranges with <span class="k">real semver</span> (GROQ cannot compare versions)…',
+      'the keyword arm got the same 82 documents as <span class="k">flat text</span> — no fields to cross…',
+      'sealing every step into the <span class="k">NoireBox</span> journal…',
+    ]
+    let ci = 0
+    $('caption').innerHTML = captions[0]
+    const rot = setInterval(() => { ci = (ci + 1) % captions.length; $('caption').innerHTML = captions[ci] }, 4200)
+    $('overlay').hidden = false
     try {
       const res = await fetch('/api/duel', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question})})
       const j = await res.json()
-      if (j.error) { $('status').textContent = 'Error: ' + j.error; return }
+      if (j.error) { $('status').hidden = false; $('status').textContent = 'Error: ' + j.error; return }
       $('structAnswer').textContent = j.structured.answer
       $('structTrace').innerHTML = traceHtml(j.structured.steps)
       $('structSub').textContent = j.structured.steps.length + ' tool calls · ' + j.structured.sealed + ' events sealed'
       $('naiveAnswer').textContent = j.naive.answer
       $('naiveTrace').innerHTML = '<div class="step">' + esc(j.naive.context).slice(0, 600) + '</div>'
       $('naiveSub').textContent = j.naive.sealed + ' events sealed'
-      $('status').hidden = true
       journal()
-    } catch (err) { $('status').textContent = 'Error: ' + err.message }
-    finally { $('duel').disabled = false; $('ask').disabled = false }
+    } catch (err) { $('status').hidden = false; $('status').textContent = 'Error: ' + err.message }
+    finally { clearInterval(rot); $('overlay').hidden = true; $('duel').disabled = false; $('ask').disabled = false }
   }
 
   async function single() {
