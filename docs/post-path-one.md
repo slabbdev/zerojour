@@ -23,6 +23,10 @@ The same model — `glm-4.5-flash`, a free-tier model, via an OpenAI-compatible 
 
 Stable across two independent full runs. The bare model scores **zero**: the corpus is deliberately seeded with **2026 advisories that postdate every model's training data** (including one with no published fix at all), so regurgitation cannot fake a win. Ground truth is computed independently from the seed data with plain predicates and semver — never through Sanity.
 
+![The duel: same question, two answers — structure left, keyword search right](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/agent-duel.png)
+
+And the full eval run, question by question:
+
 ![The real eval run: three arms side by side, question by question](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/eval-run.png)
 
 **The two misses, in full honesty** (both model-side, both verifiable):
@@ -44,9 +48,9 @@ Three pieces, all real, all running:
 
 Ask the structured agent a version question and watch the trace:
 
-![The agent intersecting version ranges live: initial_context → groq_query → six version_in_range calls](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/agent-ui-answer.png)
+![The duel UI: one question, two answers, the scoreboard above](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/agent-duel.png)
 
-That trace *is* the thesis: the agent fetched the candidate ranges through GROQ, then ran real semver intersection locally — `version_in_range(1.2.0, introduced 1.0.0, fixed 1.18.0) → true`, and five other ranges → false.
+The demo UI runs the duel live: the structured arm cites the exact range (`>= 1.0.0, < 1.18.0`) and fix (`1.18.0`) and separates affected from not-affected; the keyword arm admits it *"lacks the version-specific details needed to determine if axios 1.2.0 is affected"*.
 
 The dataset is public — judges can query it themselves, right now:
 

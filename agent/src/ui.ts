@@ -1,6 +1,7 @@
-// Minimal local UI for demos: one page, three answering modes, the tool
-// trace, and the NoireBox sealing status. Zero build step, zero dependencies
-// — `npm run ui` and open http://127.0.0.1:8767.
+// Minimal local UI for demos — built around the DUEL: the same question is
+// answered twice, side by side. Left: Sanity Context (GROQ + KB). Right:
+// flat keyword search. The difference is the whole argument.
+// Zero build step, zero dependencies — `npm run ui` and open http://127.0.0.1:8767.
 
 import {createServer, IncomingMessage, ServerResponse} from 'node:http'
 import {ask, naive, direct} from './main.ts'
@@ -16,78 +17,182 @@ const PAGE = `<!doctype html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ZéroJour — structured advisories agent</title>
+<title>ZéroJour — the duel: structure vs keyword search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: dark; }
+  :root { color-scheme: dark; --bg:#0b0e13; --panel:#121821; --line:#232a35; --ink:#d7dde6; --muted:#7d8b9e; --green:#3fb950; --red:#f85149; --blue:#7fb2e5; }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.55 ui-sans-serif, system-ui, sans-serif; background: #0e1116; color: #d7dde6; }
-  header { padding: 18px 24px; border-bottom: 1px solid #232a35; display: flex; align-items: baseline; gap: 14px; }
-  header h1 { font-size: 17px; margin: 0; letter-spacing: .3px; }
-  header span { color: #7d8b9e; font-size: 13px; }
-  main { max-width: 860px; margin: 0 auto; padding: 24px; }
-  .row { display: flex; gap: 10px; margin: 14px 0; }
-  textarea { flex: 1; min-height: 74px; background: #161c25; color: #e8edf4; border: 1px solid #2a3342; border-radius: 10px; padding: 12px; font: inherit; resize: vertical; }
-  select, button { background: #1c2431; color: #e8edf4; border: 1px solid #2a3342; border-radius: 10px; padding: 10px 14px; font: inherit; cursor: pointer; }
-  button { background: #2b6cb0; border-color: #2b6cb0; font-weight: 600; }
-  button:disabled { opacity: .55; cursor: wait; }
-  .card { background: #121821; border: 1px solid #232a35; border-radius: 12px; padding: 16px; margin: 14px 0; }
-  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .8px; color: #7d8b9e; margin: 0 0 8px; }
-  .step { font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 6px 0; border-bottom: 1px dashed #1f2733; }
-  .step:last-child { border-bottom: 0; }
-  .step b { color: #7fb2e5; font-weight: 600; }
-  #answer { white-space: pre-wrap; }
-  #status { font-size: 13px; color: #7d8b9e; }
-  #status b { color: #9fd6a5; }
-  a { color: #7fb2e5; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 Inter, ui-sans-serif, system-ui, sans-serif; }
+  header { display:flex; align-items:baseline; gap:16px; padding:18px 28px; border-bottom:1px solid var(--line); }
+  .wordmark { font-family:'Pirata One', serif; font-size:34px; letter-spacing:.02em; color:#f6f1e5; }
+  header .tag { color:var(--muted); font-size:13px; }
+  header .chain { margin-left:auto; font:600 12px 'IBM Plex Mono', monospace; color:var(--green); border:1px solid var(--green); border-radius:20px; padding:4px 12px; }
+  header .chain.bad { color:var(--red); border-color:var(--red); }
+  .scoreboard { display:flex; gap:12px; padding:16px 28px; flex-wrap:wrap; align-items:center; }
+  .chip { border:1px solid var(--line); border-radius:10px; padding:8px 14px; background:var(--panel); }
+  .chip b { font:800 18px Inter; }
+  .chip .lbl { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); display:block; }
+  .chip.win b { color:var(--green); } .chip.lose b { color:var(--red); }
+  .scoreboard .note { color:var(--muted); font-size:12px; font-style:italic; margin-left:auto; }
+  main { max-width:1200px; margin:0 auto; padding:10px 28px 60px; }
+  .explain { border-left:3px solid var(--blue); padding:10px 16px; color:var(--ink); margin:10px 0 16px; }
+  .explain b { color:var(--blue); }
+  .row { display:flex; gap:10px; margin:8px 0 18px; }
+  textarea { flex:1; min-height:78px; background:var(--panel); color:#e8edf4; border:1px solid var(--line); border-radius:12px; padding:14px; font:inherit; resize:vertical; }
+  button { font:inherit; font-weight:700; border:0; border-radius:12px; padding:12px 22px; cursor:pointer; }
+  .duel { background:#2b6cb0; color:#fff; }
+  button:disabled { opacity:.5; cursor:wait; }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:900px){ .cols{grid-template-columns:1fr;} }
+  .panel { border:1px solid var(--line); border-radius:14px; background:var(--panel); overflow:hidden; }
+  .panel .head { padding:12px 16px; font:600 13px Inter; letter-spacing:.04em; }
+  .panel.win .head { background:#12261a; color:var(--green); border-bottom:1px solid #1d3a26; }
+  .panel.lose .head { background:#2a1512; color:var(--red); border-bottom:1px solid #3a1d1d; }
+  .panel .head .sub { display:block; font-weight:400; color:var(--muted); font-size:12px; margin-top:2px; }
+  .panel .body { padding:16px; }
+  .answer { white-space:pre-wrap; font-size:14.5px; }
+  .meta { margin-top:10px; font-size:12px; color:var(--muted); }
+  details { margin-top:12px; border-top:1px dashed var(--line); padding-top:10px; }
+  summary { cursor:pointer; color:var(--blue); font:600 12px 'IBM Plex Mono', monospace; }
+  .step { font:12.5px/1.5 'IBM Plex Mono', monospace; padding:6px 0; border-bottom:1px dashed #1f2733; }
+  .step b { color:var(--blue); font-weight:600; }
+  .step .arg { color:var(--muted); }
+  .status { font:13px 'IBM Plex Mono', monospace; color:var(--muted); padding:14px 4px; }
+  .foot { text-align:center; color:var(--muted); font-size:12px; padding:26px 0 6px; }
+  a { color:var(--blue); }
 </style>
 </head>
 <body>
-<header><h1>ZéroJour</h1><span>security advisories agent — only works because the content is structured</span></header>
+<header>
+  <span class="wordmark">ZÉROJOUR</span>
+  <span class="tag">the zero-day paper · security advisories agent</span>
+  <span class="chain" id="chain">checking journal…</span>
+</header>
+
+<div class="scoreboard">
+  <div class="chip win"><span class="lbl">Structured — Sanity Context</span><b>9/11</b></div>
+  <div class="chip lose"><span class="lbl">Keyword search — flat text</span><b>1/11</b></div>
+  <div class="chip"><span class="lbl">No tools — memorization control</span><b>0/11</b></div>
+  <span class="note">measured on the live dataset · ground truth computed independently · sealed in NoireBox</span>
+</div>
+
 <main>
+  <div class="explain">
+    <b>Run the duel:</b> the same model answers your question twice. Left, it reads through
+    <b>Sanity Context</b> (structured fields: version ranges, CVSS components, fix status).
+    Right, it only gets flat keyword-search results over the same 82 documents.
+    Only one of them can cross-check a version, a vector and a fix at the same time.
+  </div>
   <div class="row">
     <textarea id="question" placeholder="e.g. I run axios 1.2.0 — which advisories affect exactly that version, and what fixes each one?"></textarea>
   </div>
   <div class="row">
+    <button class="duel" id="duel">⚔ Run the duel</button>
     <select id="mode">
-      <option value="structured">Structured — Sanity Context (GROQ + KB)</option>
-      <option value="naive">Naive — keyword search over the same docs</option>
-      <option value="no_tools">Direct model — no data access (memorization control)</option>
+      <option value="structured">single: structured</option>
+      <option value="naive">single: keyword search</option>
+      <option value="no_tools">single: no tools (control)</option>
     </select>
-    <button id="ask">Ask</button>
+    <button id="ask" style="background:var(--panel);color:var(--ink);border:1px solid var(--line)">Run single arm</button>
   </div>
-  <div class="card" id="traceCard" hidden><h2>Tool trace</h2><div id="trace"></div></div>
-  <div class="card" id="answerCard" hidden><h2>Answer</h2><div id="answer"></div></div>
-  <div class="card" id="statusCard" hidden><h2>Journal</h2><div id="status"></div></div>
+
+  <div id="status" class="status" hidden></div>
+  <div class="cols" id="duelCols" hidden>
+    <div class="panel win" id="pStruct">
+      <div class="head">WITH STRUCTURE — Sanity Context (GROQ + KB)
+        <span class="sub" id="structSub"></span></div>
+      <div class="body">
+        <div class="answer" id="structAnswer"></div>
+        <details><summary>tool trace</summary><div id="structTrace"></div></details>
+      </div>
+    </div>
+    <div class="panel lose" id="pNaive">
+      <div class="head">KEYWORD SEARCH — flat text, same 82 documents
+        <span class="sub" id="naiveSub"></span></div>
+      <div class="body">
+        <div class="answer" id="naiveAnswer"></div>
+        <details><summary>what the search returned</summary><div id="naiveTrace"></div></details>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="singleCard" hidden>
+    <div class="head" id="singleHead"></div>
+    <div class="body"><div class="answer" id="singleAnswer"></div>
+      <details><summary>tool trace</summary><div id="singleTrace"></div></details></div>
+  </div>
+
+  <div class="foot">every step of every answer is sealed into a NoireBox journal —
+    <a href="#" id="dashLink" target="_blank">open the flight deck</a> ·
+    <a href="https://github.com/slabbdev/zerojour" target="_blank">github.com/slabbdev/zerojour</a></div>
 </main>
 <script>
   const $ = (id) => document.getElementById(id)
-  async function ask() {
+  const esc = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  async function journal() {
+    try {
+      const j = await (await fetch('/api/journal')).json()
+      const el = $('chain')
+      if (j.valid) { el.textContent = 'chain intact · ' + j.nb_events + ' events'; el.className = 'chain' }
+      else { el.textContent = 'journal offline'; el.className = 'chain bad' }
+      $('dashLink').href = j.dashboard
+    } catch {}
+  }
+  journal()
+
+  function traceHtml(steps) {
+    return (steps ?? []).map(s =>
+      '<div class="step"><b>' + s.tool + '</b> <span class="arg">' + esc(JSON.stringify(s.args)).slice(0, 200) + '</span> → ' + esc(s.resultPreview).slice(0, 200) + '</div>'
+    ).join('') || '<div class="step">(no tool calls)</div>'
+  }
+
+  async function duel() {
     const question = $('question').value.trim()
     if (!question) return
-    $('ask').disabled = true
-    $('traceCard').hidden = $('answerCard').hidden = $('statusCard').hidden = true
+    $('duel').disabled = true; $('ask').disabled = true
+    $('duelCols').hidden = false; $('singleCard').hidden = true
+    $('structAnswer').textContent = ''; $('naiveAnswer').textContent = ''
+    $('structSub').textContent = 'working…'; $('naiveSub').textContent = 'working…'
+    $('status').hidden = false; $('status').textContent = 'the model is answering twice — the structured arm walks the dataset, the keyword arm gets flat text…'
     try {
-      const res = await fetch('/api/ask', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({question, mode: $('mode').value})})
-      const json = await res.json()
-      if (json.error) { $('answerCard').hidden = false; $('answer').textContent = 'Error: ' + json.error; return }
-      $('traceCard').hidden = false
-      $('trace').innerHTML = (json.steps ?? []).map((s) => '<div class="step"><b>' + s.tool + '</b>(' + JSON.stringify(s.args).slice(0, 220) + ') → ' + s.resultPreview.replace(/</g, '&lt;').slice(0, 220) + '</div>').join('') || '<div class="step">(no tool calls)</div>'
-      $('answerCard').hidden = false
-      $('answer').textContent = json.answer
-      const journal = await (await fetch('/api/journal')).json()
-      $('statusCard').hidden = false
-      $('status').innerHTML = journal.valid
-        ? 'This answer was produced with <b>' + json.sealed + ' events sealed</b> into the NoireBox journal — chain verified: <b>' + journal.nb_events + ' events, valid</b>. <a href="' + journal.dashboard + '" target="_blank">Open dashboard</a>'
-        : 'NoireBox journal: <b>not available</b> at ' + journal.url + ' — the agent ran, but nothing was sealed (it never claims a proof it did not produce).'
-    } catch (err) {
-      $('answerCard').hidden = false
-      $('answer').textContent = 'Error: ' + err.message
-    } finally {
-      $('ask').disabled = false
-    }
+      const res = await fetch('/api/duel', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question})})
+      const j = await res.json()
+      if (j.error) { $('status').textContent = 'Error: ' + j.error; return }
+      $('structAnswer').textContent = j.structured.answer
+      $('structTrace').innerHTML = traceHtml(j.structured.steps)
+      $('structSub').textContent = j.structured.steps.length + ' tool calls · ' + j.structured.sealed + ' events sealed'
+      $('naiveAnswer').textContent = j.naive.answer
+      $('naiveTrace').innerHTML = '<div class="step">' + esc(j.naive.context).slice(0, 600) + '</div>'
+      $('naiveSub').textContent = j.naive.sealed + ' events sealed'
+      $('status').hidden = true
+      journal()
+    } catch (err) { $('status').textContent = 'Error: ' + err.message }
+    finally { $('duel').disabled = false; $('ask').disabled = false }
   }
-  $('ask').onclick = ask
-  $('question').addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) ask() })
+
+  async function single() {
+    const question = $('question').value.trim()
+    if (!question) return
+    $('duel').disabled = true; $('ask').disabled = true
+    $('duelCols').hidden = true; $('singleCard').hidden = false
+    $('singleHead').textContent = 'SINGLE ARM — ' + $('mode').value
+    $('singleAnswer').textContent = ''; $('singleTrace').innerHTML = ''
+    $('status').hidden = false; $('status').textContent = 'working…'
+    try {
+      const res = await fetch('/api/ask', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question, mode: $('mode').value})})
+      const j = await res.json()
+      if (j.error) { $('status').textContent = 'Error: ' + j.error; return }
+      $('singleAnswer').textContent = j.answer
+      $('singleTrace').innerHTML = traceHtml(j.steps)
+      $('status').hidden = true
+      journal()
+    } catch (err) { $('status').textContent = 'Error: ' + err.message }
+    finally { $('duel').disabled = false; $('ask').disabled = false }
+  }
+
+  $('duel').onclick = duel
+  $('ask').onclick = single
+  $('question').addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) duel() })
 </script>
 </body>
 </html>`
@@ -112,6 +217,25 @@ export function startUiServer(): void {
       sendJson(res, 200, {...body, valid: verify.ok && body.valid === true, dashboard: `${cfg.noireboxUrl.replace(/\/+$/, '')}/dashboard`, url: cfg.noireboxUrl})
       return
     }
+    if (req.method === 'POST' && req.url === '/api/duel') {
+      let body = ''
+      req.on('data', (c) => (body += c))
+      req.on('end', async () => {
+        try {
+          const {question} = JSON.parse(body) as {question?: string}
+          if (!question?.trim()) return sendJson(res, 400, {error: 'empty question'})
+          // The two arms run in parallel: same model, same moment, same question.
+          const [naiveResult, structuredResult] = await Promise.all([naive(question), ask(question)])
+          sendJson(res, 200, {
+            structured: {answer: structuredResult.answer, steps: structuredResult.steps, sealed: structuredResult.sealed},
+            naive: {answer: naiveResult.answer, context: naiveResult.context, sealed: naiveResult.sealed},
+          })
+        } catch (err) {
+          sendJson(res, 500, {error: err instanceof Error ? err.message : String(err)})
+        }
+      })
+      return
+    }
     if (req.method === 'POST' && req.url === '/api/ask') {
       let body = ''
       req.on('data', (c) => (body += c))
@@ -134,6 +258,6 @@ export function startUiServer(): void {
     sendJson(res, 404, {error: 'not found'})
   })
   server.listen(PORT, '127.0.0.1', () => {
-    console.log(`ZéroJour UI on http://127.0.0.1:${PORT} (NoireBox journal: ${loadConfig().noireboxUrl})`)
+    console.log(`ZéroJour duel UI on http://127.0.0.1:${PORT} (NoireBox journal: ${loadConfig().noireboxUrl})`)
   })
 }
