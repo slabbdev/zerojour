@@ -36,6 +36,8 @@ A stronger model is one env variable away (`AGENT_MODEL`) — the harness, the s
 
 ## What I Built
 
+One dataset, two products. This post is the **measured agent**; our [Path Two submission](#) is a newspaper that prints from the same 82 advisories, where the machine composes and only a human can publish. Same source of truth — two different proofs of the same thesis. (The contest rules explicitly allow one entry per path, and even have a tie-break clause for people doing both.)
+
 Three pieces, all real, all running:
 
 1. **A structured corpus** — 82 real advisories (16 npm/pip packages, 50 CWEs, 16 remediation playbooks), fetched from the GitHub Advisory Database (CC-BY-4.0) + the CISA KEV catalog. Withdrawn and malware advisories excluded. `npm run fetch:advisories` rebuilds the whole corpus from live sources — nothing hand-written is imported.
