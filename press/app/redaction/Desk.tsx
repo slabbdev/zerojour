@@ -71,7 +71,7 @@ export default function RedactionDesk({
       {note && <div className="notice">{note}</div>}
 
       <div className="desk">
-        <h2>Ordre de fabrication — pick an advisory, the desk composes it</h2>
+        <h2>The make-list — pick an advisory, the desk composes it</h2>
         <div className="grid">
           {candidates.map((c) => (
             <div className="card" key={c.ghsaId}>
@@ -85,8 +85,8 @@ export default function RedactionDesk({
         </div>
       </div>
 
-      <h2 className="section-title">Tirage en cours <span className="en">— draft → review → published</span></h2>
-      {articles.length === 0 && <p className="fineprint">Aucun article en composition. Le journal attend la rédaction.</p>}
+      <h2 className="section-title">On the press <span className="en">— draft → review → published</span></h2>
+      {articles.length === 0 && <p className="fineprint">Nothing on the press yet. The paper awaits its editors.</p>}
       {articles.map((a) => (
         <div className="desk" key={a._id}>
           <span className={`state-chip ${a.state}`}>{a.state}</span>
@@ -95,19 +95,19 @@ export default function RedactionDesk({
           <BlockText body={a.body} />
           {a.state === 'draft' && (
             <button className="print" disabled={busy || readOnly} onClick={() => advance(a._id, 'review')}>
-              Passer en revue humaine →
+              Send to human review →
             </button>
           )}
           {a.state === 'review' && (
             <button className="print" disabled={busy || readOnly} onClick={() => advance(a._id, 'published')}>
-              ✅ Publier (signature humaine)
+              ✅ Publish (human signature)
             </button>
           )}
-          {a.state === 'published' && a.publishedAt && <p className="fineprint">Publié le {new Date(a.publishedAt).toLocaleString('fr-FR')}</p>}
+          {a.state === 'published' && a.publishedAt && <p className="fineprint">Published {new Date(a.publishedAt).toLocaleString('fr-FR')}</p>}
         </div>
       ))}
       <p className="fineprint" style={{marginTop: 30}}>
-        <Link href="/">← La une</Link>
+        <Link href="/">← Front page</Link>
       </p>
     </>
   )

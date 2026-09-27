@@ -26,7 +26,7 @@ export default function Ticker() {
   if (!flash) return null
   return (
     <div className="ticker">
-      <b>● EN DIRECT&nbsp;&nbsp;</b> {flash}
+      <b>● LIVE&nbsp;&nbsp;</b> {flash}
     </div>
   )
 }

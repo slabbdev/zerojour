@@ -3,7 +3,7 @@ import './globals.css'
 import Ticker from '../components/Ticker'
 
 export const metadata: Metadata = {
-  title: 'ZéroJour — le journal du jour zéro',
+  title: 'ZéroJour — the zero-day paper',
   description: 'A newspaper printed live from a structured security-advisory dataset (Sanity). Every headline is a real advisory; every number is a typed field.',
 }
 
@@ -14,10 +14,10 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <Ticker />
         <header className="masthead">
           <h1>ZÉROJOUR</h1>
-          <div className="tagline">Le journal du jour zéro — printed from structured content, not scraped prose.</div>
+          <div className="tagline">The zero-day paper — printed from structured content, not scraped prose.</div>
           <div className="dateline">
-            <span>Édition permanente</span>
-            <span>Dataset public · Sanity GROQ</span>
+            <span>Permanent edition</span>
+            <span>Public dataset · Sanity GROQ</span>
             <span>GHSA × CISA KEV</span>
           </div>
         </header>

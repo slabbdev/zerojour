@@ -12,7 +12,7 @@ export default async function RedactionPage() {
   ])
   return (
     <main>
-      <h2 className="section-title">La rédaction <span className="en">— the machine composes, only a human advances the workflow</span></h2>
+      <h2 className="section-title">The newsroom <span className="en">— the machine composes, only a human advances the workflow</span></h2>
       <RedactionDesk initialArticles={articles ?? []} initialCandidates={candidates ?? []} readOnly={!writeClient} />
     </main>
   )

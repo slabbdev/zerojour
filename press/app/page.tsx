@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import {frontPage, type Advisory} from '../lib/sanity'
 
-function Card({a, lang = 'Dépêche'}: {a: Advisory; lang?: string}) {
+function Card({a, kind = 'Dispatch'}: {a: Advisory; kind?: string}) {
   const score = a.severity?.baseScore ?? null
   return (
     <Link href={`/advisory/${a.ghsaId}`} style={{textDecoration: 'none'}}>
       <div className="card">
         <span className={`badge ${a.exploitMaturity === 'known_exploited' ? 'kev' : a.fix.status === 'no_fix' ? 'nofix' : ''}`}>
-          {a.exploitMaturity === 'known_exploited' ? 'À la une · activement exploitée' : a.fix.status === 'no_fix' ? 'Sans remède' : lang}
+          {a.exploitMaturity === 'known_exploited' ? 'Front page · actively exploited' : a.fix.status === 'no_fix' ? 'No remedy' : kind}
         </span>
         <h3>{a.title}</h3>
         <div className="meta">
@@ -18,7 +18,7 @@ function Card({a, lang = 'Dépêche'}: {a: Advisory; lang?: string}) {
           <small> / CVSS {a.severity?.vector ? '3.x' : 'n/a'}</small>
         </div>
         <div className="meta">
-          {a.fix.fixedVersion ? `Correctif : passez en ${a.fix.fixedVersion}` : 'Aucun correctif publié'}
+          {a.fix.fixedVersion ? `Fix: upgrade to ${a.fix.fixedVersion}` : 'No fix published'}
         </div>
       </div>
     </Link>
@@ -40,23 +40,23 @@ export default async function HomePage() {
     <main>
       {kev.length > 0 && (
         <>
-          <h2 className="section-title">À la une <span className="en">— listed in the CISA KEV catalog: treat as actively exploited</span></h2>
+          <h2 className="section-title">Front page <span className="en">— listed in the CISA KEV catalog: treat as actively exploited</span></h2>
           <div className="grid">{kev.map((a) => <Card key={a._id} a={a} />)}</div>
         </>
       )}
       {worst.length > 0 && (
         <>
-          <h2 className="section-title">Sans remède <span className="en">— no published fix; upgrading cannot close these</span></h2>
+          <h2 className="section-title">No remedy <span className="en">— no published fix; upgrading cannot close these</span></h2>
           <div className="grid">{worst.map((a) => <Card key={a._id} a={a} />)}</div>
         </>
       )}
-      <h2 className="section-title">Les plus graves <span className="en">— CVSS base score 8.0 and above</span></h2>
+      <h2 className="section-title">Highest severity <span className="en">— CVSS base score 8.0 and above</span></h2>
       <div className="grid">{highSeverity.map((a) => <Card key={a._id} a={a} />)}</div>
-      <h2 className="section-title">Dernières dépêches <span className="en">— newest advisories in the dataset</span></h2>
+      <h2 className="section-title">Latest dispatches <span className="en">— newest advisories in the dataset</span></h2>
       <div className="grid">{latest.map((a) => <Card key={a._id} a={a} />)}</div>
       <p className="fineprint" style={{marginTop: 26}}>
-        Édition n° {stats?.advisories} — {stats?.products} packages suivis, {stats?.kev} exploitée(s) activement, {stats?.noFix} sans correctif.
-        <Link href="/redaction"> La rédaction →</Link>
+        Edition #{stats?.advisories} — {stats?.products} packages tracked, {stats?.kev} actively exploited, {stats?.noFix} without a fix.
+        <Link href="/redaction"> The newsroom →</Link>
       </p>
     </main>
   )
