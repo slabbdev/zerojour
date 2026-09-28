@@ -79,7 +79,7 @@ Run everything locally: `npm install && npm run eval` replays the whole three-ar
 
 LLM logs are the only logs nobody trusts by default. So every step of this agent — each query, each MCP tool call, each answer, each eval verdict — is sealed into a local [NoireBox](https://github.com/slabbdev/noirebox) journal: SHA-256 hash chain, Ed25519 signatures, RFC 3161 timestamps.
 
-![The NoireBox flight deck: 382 sealed events, chain intact, every link visible](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/noirebox-dashboard.png)
+![The NoireBox flight deck: chain intact, every link visible](https://raw.githubusercontent.com/slabbdev/zerojour/main/docs/screens/noirebox-dashboard.png)
 
 And the part that matters: edit one sealed answer after the fact, and the chain breaks loudly.
 
