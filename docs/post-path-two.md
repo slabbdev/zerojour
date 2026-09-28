@@ -2,7 +2,7 @@
      Use the official template via the challenge page button, then paste this content.
      Suggested tags: #sanitychallenge #nextjs #sanity #vibecoding
      Publish AFTER the Path One post (link the other path from the Code section).
-     If the Vercel deploy is live, replace the [VERCEL-URL] placeholders with the real URL. -->
+     The Vercel deploy is live: https://zerojour.vercel.app -->
 
 # ZéroJour (the press edition): a newspaper that prints itself from structured content — where the machine composes and only a human can publish
 
@@ -47,8 +47,8 @@ Then the workflow: `draft → review → published`. Only a human advances it. T
 
 ## Demo
 
-- Live: [VERCEL-URL] *(deployed from the repo's `press/` folder)*
-- Or locally: `git clone https://github.com/slabbdev/zerojour && cd zerojour/press && npm install && npm run dev` — it prints from the same public dataset, no credentials needed for reading.
+- **Live: https://zerojour.vercel.app** *(deployed from the repo's `press/` folder)*
+- Fallback, locally: `git clone https://github.com/slabbdev/zerojour && cd zerojour/press && npm install && npm run dev` — it prints from the same public dataset, no credentials needed for reading.
 
 ## Sanity Project Details
 
