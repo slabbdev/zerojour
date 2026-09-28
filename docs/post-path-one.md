@@ -89,6 +89,10 @@ That screenshot is real: we copied the journal, edited one agent answer in the c
 
 **And sealing is not ZéroJour-specific.** NoireBox ships a standard MCP server, so *your* agent — whoever is reading this — can mount it with one config block and get the same tamper-evident trail: [docs/witness-for-any-agent.md](https://github.com/slabbdev/zerojour/blob/main/docs/witness-for-any-agent.md). Running an entry for this challenge? Seal your own. Nobody should take our word for what an agent did — including us.
 
+## Agent Session
+
+Our build ran inside ZCode, which is not one of the transcript uploaders this template supports (Claude Code, Gemini CLI, Codex, Copilot CLI, Pi) — so there is no session file to embed. We did the next best thing, and arguably a stronger one: **every step of every agent run is sealed into the NoireBox journal** shown above. The full trace — each `initial_context` call, each GROQ query, each `version_in_range` intersection, each eval verdict — is publicly replayable from the repo (`npm run eval`) and verifiable against the sealed chain. Same goal as an embedded session: you can check exactly what the agent did, without taking our word for it.
+
 ## Code
 
 [github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `npm run eval` replays the whole thing. This is one of two ZéroJour submissions; the newspaper edition lives in the [Path Two post](#) (linked once published).
