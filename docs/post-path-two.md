@@ -8,7 +8,7 @@
 
 A daily paper with no reporters.
 
-**ZéroJour** is a newspaper printed live from the same structured advisories dataset as our [Path One agent](#) — the front page is a GROQ query, the weather widgets are CVSS components, and the "Front page" section is literally the CISA KEV catalog field. (ZéroJour is French for *zero-day* — the brand stays French on purpose; everything else here is English, like the dataset it prints.)
+**ZéroJour** is a newspaper printed live from the same structured advisories dataset as our [Path One agent](https://dev.to/slabb/zerojour-an-advisories-agent-that-only-works-because-the-content-is-structured-and-we-prove-it-12m1) — the front page is a GROQ query, the weather widgets are CVSS components, and the "Front page" section is literally the CISA KEV catalog field. (ZéroJour is French for *zero-day* — the brand stays French on purpose; everything else here is English, like the dataset it prints.)
 
 The strange part is the **newsroom**: a `pressArticle` document type carries a real editorial workflow — `draft → review → published`. The press desk composes an article deterministically *from the typed fields* (it prints the structure, it doesn't invent prose), but **the composer cannot publish**. The state machine only moves forward on a human signature. An AI can draft your front page; it cannot sign it.
 
@@ -57,4 +57,4 @@ Then the workflow: `draft → review → published`. Only a human advances it. T
 
 ## Code
 
-[github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `press/` folder. Next.js App Router, `@sanity/client`, zero UI libraries: the newspaper look is one stylesheet on purpose. This is one of two ZéroJour submissions; the measured agent lives in the [Path One post](#) (linked once published).
+[github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `press/` folder. Next.js App Router, `@sanity/client`, zero UI libraries: the newspaper look is one stylesheet on purpose. This is one of two ZéroJour submissions; the measured agent lives in the [Path One post](https://dev.to/slabb/zerojour-an-advisories-agent-that-only-works-because-the-content-is-structured-and-we-prove-it-12m1) (linked once published).
