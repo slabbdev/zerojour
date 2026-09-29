@@ -36,7 +36,7 @@ A stronger model is one env variable away (`AGENT_MODEL`) — the harness, the s
 
 ## What I Built
 
-One dataset, two products. This post is the **measured agent**; our [Path Two submission](#) is a newspaper that prints from the same 82 advisories, where the machine composes and only a human can publish. Same source of truth — two different proofs of the same thesis. (The contest rules explicitly allow one entry per path, and even have a tie-break clause for people doing both.)
+One dataset, two products. This post is the **measured agent**; our [Path Two submission](https://dev.to/slabb/zerojour-the-press-edition-a-newspaper-that-prints-itself-from-structured-content-where-the-2734) is a newspaper that prints from the same 82 advisories, where the machine composes and only a human can publish. Same source of truth — two different proofs of the same thesis. (The contest rules explicitly allow one entry per path, and even have a tie-break clause for people doing both.)
 
 Three pieces, all real, all running:
 
@@ -95,4 +95,4 @@ Our build ran inside ZCode, which is not one of the transcript uploaders this te
 
 ## Code
 
-[github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `npm run eval` replays the whole thing. This is one of two ZéroJour submissions; the newspaper edition lives in the [Path Two post](#) (linked once published).
+[github.com/slabbdev/zerojour](https://github.com/slabbdev/zerojour) — `npm run eval` replays the whole thing. This is one of two ZéroJour submissions; the newspaper edition lives in the [Path Two post](https://dev.to/slabb/zerojour-the-press-edition-a-newspaper-that-prints-itself-from-structured-content-where-the-2734).
